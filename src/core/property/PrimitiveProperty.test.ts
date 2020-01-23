@@ -2,25 +2,25 @@ import { PrimitiveProperty } from './PrimitiveProperty';
 
 describe('PrimitiveProperty', () => {
     it('can serialize', () => {
-        const testStringPrimitive = new PrimitiveProperty<string>('Hello, I am string!');
-        expect(testStringPrimitive.serialize()).toBe('Hello, I am string!');
-        testStringPrimitive.deserialize('stringed');
-        expect(testStringPrimitive.serialize()).toBe('stringed');
-        expect(testStringPrimitive.get()).toBe('stringed');
+        const serializingString = new PrimitiveProperty<string>('Hello, I am string!');
+        const deserializingString = new PrimitiveProperty<string>();
+        deserializingString.fromJSON(serializingString.toJSON());
+        expect(deserializingString.get()).toBe('Hello, I am string!');
 
-        const testNumberPrimitive = new PrimitiveProperty<number>(69);
-        expect(testNumberPrimitive.serialize()).toBe('69');
-        testNumberPrimitive.deserialize('773');
-        expect(testNumberPrimitive.serialize()).toBe('773');
-        expect(testNumberPrimitive.get()).toBe(773);
-        expect(() => testNumberPrimitive.deserialize('not a number')).toThrow();
+        const serializingNumber = new PrimitiveProperty<number>(69);
+        const deserializingNumber = new PrimitiveProperty<number>();
+        deserializingNumber.fromJSON(serializingNumber.toJSON());
+        expect(deserializingNumber.get()).toBe(69);
 
-        const testBooleanPrimitive = new PrimitiveProperty<boolean>(true);
-        expect(testBooleanPrimitive.serialize()).toBe('true');
-        testBooleanPrimitive.deserialize('false');
-        expect(testBooleanPrimitive.serialize()).toBe('false');
-        expect(testBooleanPrimitive.get()).toBe(false);
-        expect(() => testBooleanPrimitive.deserialize('45')).toThrow();
+        const serializingBool = new PrimitiveProperty<boolean>(true);
+        const deserializingBool = new PrimitiveProperty<boolean>();
+        deserializingBool.fromJSON(serializingBool.toJSON());
+        expect(deserializingBool.get()).toBe(true);
 
+        expect(() => deserializingString.fromJSON(serializingNumber.toJSON())).toThrow();
+        expect(() => deserializingNumber.fromJSON({ what: 'what' })).toThrow();
+
+        deserializingString.set(null);
+        expect(() => deserializingString.fromJSON(serializingNumber.toJSON())).not.toThrow();
     });
 });

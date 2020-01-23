@@ -1,7 +1,3 @@
-import { SerializableConstructorMap } from './SerializableConstructorMap';
-import "reflect-metadata";
-import { Serializable } from './Serializable';
-
 export abstract class DynamicProperty<T> {
     protected readonly readonly: boolean;
     protected value: T | null;
@@ -32,32 +28,15 @@ export abstract class DynamicProperty<T> {
         this.value = value;
     }
 
+    public getSafe(): T {
+        if (this.value === null) {
+            throw new Error(`Get safe on ${this} failed! Value is null`);
+        }
+
+        return this.value;
+    }
+
     public abstract toJSON(): any;
     public abstract fromJSON(json: any): void;
 
-    // public abstract serialize(): string;
-    // public abstract deserialize(value: string): void;
-
-
 }
-
-// export class PropertyArray {
-//     public readonly properties: Array<DynamicProperty<any>> = [];
-
-//     public add<T extends DynamicProperty<any>>(property: T): T {
-//         this.properties.push(property);
-//         return property;
-//     }
-
-//     public remove<T extends DynamicProperty<any>>(property: T): T {
-//         let index = this.properties.indexOf(property);
-//         if (index !== -1) {
-//             this.properties.splice(index, 1)[0];
-//         }
-//         return property;
-//     }
-// }
-
-// export interface PropertyOwner {
-//     properties: PropertyArray;
-// }

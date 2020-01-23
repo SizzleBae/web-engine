@@ -5,12 +5,13 @@ import { TransformComponent } from '../components/TransformComponent';
 
 describe('ObjectProperty', () => {
     it('can serialize', () => {
-        const testComponent = new ObjectProperty(TransformComponent, null);
-        expect(testComponent.serialize()).toBe('null');
-        testComponent.set(new TransformComponent());
-        console.log(testComponent.serialize());
-        // expect(testIDComponent.serialize()).toBe(testIDComponent.get()?.id.get());
+        const serializingObject = new ObjectProperty<IDComponent>(new IDComponent());
+        const jsonFilled = serializingObject.toJSON();
 
+        const deserialzingObject = new ObjectProperty<IDComponent>();
+        deserialzingObject.fromJSON(jsonFilled);
+
+        expect(deserialzingObject.get()?.id.get()).toBe(serializingObject.get()?.id.get());
 
     });
 });
