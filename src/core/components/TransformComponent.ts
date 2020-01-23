@@ -7,15 +7,34 @@ import { Serializable } from "../property/Serializable";
 
 @Serializable('core.components.TransformComponent')
 export class TransformComponent extends LeafComponent {
-  public readonly transformParent = new ObjectProperty(IDComponent, new IDComponent());
-  public readonly x = new PrimitiveProperty<number>(0);
-  public readonly y = new PrimitiveProperty<number>(0);
-  public readonly z = new PrimitiveProperty<number>(0);
-  public readonly rotation = new ArrayProperty<number>([1, 1, 1]);
-  public readonly identifiers = new ArrayProperty<IDComponent>([new IDComponent(), new IDComponent(), new IDComponent()]);
+	public readonly transformParent = new ObjectProperty(IDComponent, new IDComponent());
 
-  constructor() {
-    super();
-  }
+	public readonly x = new PrimitiveProperty<number>(5);
+	public readonly y = new PrimitiveProperty<number>(4);
+	public readonly z = new PrimitiveProperty<number>(3);
+
+	public readonly rotation = new ArrayProperty<PrimitiveProperty<number>>([
+		new PrimitiveProperty<number>(0),
+		new PrimitiveProperty<number>(1),
+		new PrimitiveProperty<number>(2)
+	]);
+
+	public readonly children = new ArrayProperty<ObjectProperty<IDComponent>>([
+		new ObjectProperty(IDComponent, new IDComponent()),
+		new ObjectProperty(IDComponent, new IDComponent()),
+		new ObjectProperty(IDComponent, new IDComponent())
+	]);
+
+	public readonly ohgod = new ArrayProperty<ArrayProperty<ObjectProperty<IDComponent>>>([
+		new ArrayProperty<ObjectProperty<IDComponent>>([
+			new ObjectProperty(IDComponent, new IDComponent()),
+			new ObjectProperty(IDComponent, new IDComponent()),
+			new ObjectProperty(IDComponent, new IDComponent())
+		])
+	]);
+
+	constructor() {
+		super();
+	}
 
 }

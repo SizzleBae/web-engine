@@ -1,10 +1,18 @@
 import { SerializableConstructorMap } from './SerializableConstructorMap';
 import "reflect-metadata";
+import { Serializable } from './Serializable';
 
 export abstract class DynamicProperty<T> {
     protected readonly readonly: boolean;
+    protected value: T | null;
 
-    constructor(protected value: T | null, readonly?: boolean) {
+    constructor(defaultValue?: T | null, readonly?: boolean) {
+        if (defaultValue === undefined) {
+            this.value = null;
+        } else {
+            this.value = defaultValue;
+        }
+
         if (readonly === undefined) {
             this.readonly = false;
         } else {
@@ -12,11 +20,25 @@ export abstract class DynamicProperty<T> {
         }
     }
 
-    public abstract get(): T | null;
-    public abstract set(value: T | null): void;
+    public get(): T | null {
+        return this.value;
+    }
 
-    public abstract serialize(): string;
-    public abstract deserialize(value: string): void;
+    public set(value: T | null): void {
+        if (this.readonly) {
+            throw new Error('Attempted to set value on *readonly* dynamic property!')
+        }
+
+        this.value = value;
+    }
+
+    public abstract toJSON(): any;
+    public abstract fromJSON(json: any): void;
+
+    // public abstract serialize(): string;
+    // public abstract deserialize(value: string): void;
+
+
 }
 
 // export class PropertyArray {
