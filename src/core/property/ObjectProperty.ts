@@ -1,6 +1,4 @@
 import { DynamicProperty } from './Property';
-import { PrimitiveProperty } from './PrimitiveProperty';
-import { SerializeUtils } from './SerializeUtils';
 import { META_SERIALIZABLE_ID_KEY, Serializable } from './Serializable';
 import { SerializableConstructorMap } from './SerializableConstructorMap';
 
@@ -33,11 +31,15 @@ export class ObjectProperty<T extends Object> extends DynamicProperty<T> {
         return json;
     }
 
-    public fromJSON(json: any): void {
+    public fromJSON(json: any): ObjectProperty<T> {
+        if (json['object'] === undefined) {
+            return this;
+        }
+
         const Constructor = SerializableConstructorMap.instance().getOwnerConstructor(json['object']['constructorID']);
 
         if (Constructor === undefined) {
-            return;
+            return this;
         }
 
         this.value = new Constructor() as T;
@@ -47,6 +49,8 @@ export class ObjectProperty<T extends Object> extends DynamicProperty<T> {
                 value.fromJSON(json['object'][key]);
             }
         }
+
+        return this;
 
     }
 

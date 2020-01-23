@@ -1,5 +1,4 @@
 import { DynamicProperty } from "./Property";
-import { SerializeUtils } from "./SerializeUtils";
 import { Serializable, META_SERIALIZABLE_ID_KEY } from "./Serializable";
 
 export type Primitive = string | number | boolean;
