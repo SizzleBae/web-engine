@@ -10,17 +10,17 @@ import uuidv1 from 'uuid/v1'
 @Serializable('core.components.IDComponent')
 export class IDComponent extends LeafComponent {
 
-  public readonly id: PrimitiveProperty<string>;
+	public readonly id: PrimitiveProperty<string>;
 
-  constructor(id?: string) {
-    super();
+	constructor(id?: string) {
+		super();
 
-    if (id) {
-      this.id = new PrimitiveProperty(id, true);
-    } else {
-      this.id = new PrimitiveProperty(uuidv1(), true);
-    }
+		if (id) {
+			this.id = new PrimitiveProperty(id, true);
+		} else {
+			this.id = new PrimitiveProperty(uuidv1(), true);
+		}
 
-  }
+	}
 
 }
