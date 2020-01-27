@@ -11,12 +11,11 @@ describe("PropertOwnerConstructorMap", () => {
             }
         }
 
-        const test = new RegisterTest();
-        let constructor = SerializableConstructorMap.instance().getOwnerConstructor(Reflect.get(RegisterTest, META_SERIALIZABLE_ID_KEY));
+        const Constructor = SerializableConstructorMap.instance().getOwnerConstructor(Reflect.get(RegisterTest, META_SERIALIZABLE_ID_KEY));
 
-        expect(constructor).toBeDefined();
-        if (constructor) {
-            let constructed = new constructor();
+        expect(Constructor).toBeDefined();
+        if (Constructor) {
+            const constructed = new Constructor();
 
             expect(constructed).toBeInstanceOf(RegisterTest);
         }

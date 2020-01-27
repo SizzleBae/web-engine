@@ -9,11 +9,11 @@ export class ObjectProperty<T extends Object> extends DynamicProperty<T> {
         const json = {} as any;
         json['constructorID'] = Reflect.get(this.constructor, META_SERIALIZABLE_ID_KEY);
 
-        if (this.value === null) {
-            return json
-        }
-
         json['object'] = {};
+
+        if (this.value === null) {
+            return json;
+        }
 
         // Only serializable objects will be serialized, meaning there must be a matching constructor mapped for the object
         const constructorID = Reflect.get(this.value.constructor, META_SERIALIZABLE_ID_KEY);
@@ -37,7 +37,6 @@ export class ObjectProperty<T extends Object> extends DynamicProperty<T> {
         }
 
         const Constructor = SerializableConstructorMap.instance().getOwnerConstructor(json['object']['constructorID']);
-
         if (Constructor === undefined) {
             return this;
         }
@@ -46,7 +45,12 @@ export class ObjectProperty<T extends Object> extends DynamicProperty<T> {
 
         for (const [key, value] of Object.entries(this.value)) {
             if (value instanceof DynamicProperty) {
-                value.fromJSON(json['object'][key]);
+                const jsonValue = json['object'][key];
+                if (jsonValue !== undefined) {
+                    value.fromJSON(jsonValue);
+                } else {
+                    console.warn(`Object property JSON - ${json} - is missing value: ${value}`);
+                }
             }
         }
 

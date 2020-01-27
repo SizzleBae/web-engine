@@ -16,9 +16,9 @@ export class TransformComponent extends LeafComponent {
 	public readonly rotation = new ArrayProperty([
 		new PrimitiveProperty(0),
 		new PrimitiveProperty(1),
-		new PrimitiveProperty(2),
-		new PrimitiveProperty('I snuck in here!'),
-		new PrimitiveProperty(true),
+		new PrimitiveProperty<number>(2),
+		new PrimitiveProperty<string>('I snuck in here!'),
+		new PrimitiveProperty<boolean>(true),
 	]);
 
 	public readonly children = new ArrayProperty([
