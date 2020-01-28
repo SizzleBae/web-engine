@@ -26,16 +26,6 @@ export class ReferenceProperty<T extends object> extends DynamicProperty<T> {
         return reference as T;
     }
 
-    public getSafe(): T {
-        const result = this.get();
-
-        if (result === null) {
-            throw new Error(`Get safe on ${this} failed! Get() returned null!`);
-        }
-
-        return result;
-    }
-
     public set(target: T | null): void {
         if (this.readonly) {
             throw new Error('Attempted to set value on *readonly* dynamic property!')

@@ -1,6 +1,7 @@
 import { DynamicProperty } from './Property';
 import { META_SERIALIZABLE_ID_KEY, Serializable } from './Serializable';
 import { SerializableConstructorMap } from './SerializableConstructorMap';
+import { ReferenceManager } from './ReferenceManager';
 
 @Serializable('core.ObjectProperty')
 export class ObjectProperty<T extends object> extends DynamicProperty<T> {
@@ -22,6 +23,12 @@ export class ObjectProperty<T extends object> extends DynamicProperty<T> {
         }
         json['object']['constructorID'] = constructorID;
 
+        // If the object exists in the reference manager, save its referable ID
+        const referenceID = ReferenceManager.instance().getID(this.value);
+        if (referenceID !== undefined) {
+            json['object']['referenceID'] = referenceID;
+        }
+
         for (const [key, value] of Object.entries(this.value)) {
             if (value instanceof DynamicProperty) {
                 json['object'][key] = value.toJSON();
@@ -42,6 +49,12 @@ export class ObjectProperty<T extends object> extends DynamicProperty<T> {
         }
 
         this.value = new Constructor() as T;
+
+        // If the object has a referable id, assign it to that id in reference manager
+        const referenceID = json['object']['referenceID'];
+        if (referenceID !== undefined) {
+            ReferenceManager.instance().set(referenceID, this.value);
+        }
 
         for (const [key, value] of Object.entries(this.value)) {
             if (value instanceof DynamicProperty) {

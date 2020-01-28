@@ -23,9 +23,9 @@ describe('ArrayProperty', () => {
         const deserializing = new ObjectProperty<ArrayTest>();
         deserializing.fromJSON(json);
 
-        for (let i = 0; i < serializing.getSafe().rotation.getSafe().length; i++) {
-            const original = serializing.getSafe().rotation.getSafe()[i].getSafe();
-            const duplicate = deserializing.getSafe().rotation.getSafe()[i].getSafe();
+        for (let i = 0; i < serializing.getS().rotation.getS().length; i++) {
+            const original = serializing.getS().rotation.getS()[i].getS();
+            const duplicate = deserializing.getS().rotation.getS()[i].getS();
             expect(original).toBe(duplicate)
         }
 

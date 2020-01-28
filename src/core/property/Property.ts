@@ -28,12 +28,14 @@ export abstract class DynamicProperty<T> {
         this.value = value;
     }
 
-    public getSafe(): T {
-        if (this.value === null) {
-            throw new Error(`Get safe on ${this} failed! Value is null`);
+    public getS(): T {
+        const result = this.get();
+
+        if (result === null) {
+            throw new Error(`Get safe on ${this} failed! Get() returned null!`);
         }
 
-        return this.value;
+        return result;
     }
 
     public abstract toJSON(): object;
