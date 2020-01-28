@@ -5,7 +5,7 @@ import { SerializableConstructorMap } from "./SerializableConstructorMap";
 @Serializable('core.ArrayProperty')
 export class ArrayProperty<T extends DynamicProperty<any>> extends DynamicProperty<T[]> {
 
-    public toJSON(): any {
+    public toJSON(): object {
         const json = {} as any;
         json['constructorID'] = Reflect.get(this.constructor, META_SERIALIZABLE_ID_KEY);
 

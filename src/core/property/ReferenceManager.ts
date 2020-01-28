@@ -1,7 +1,7 @@
 export class Reference {
     public referenceCount = 0;
 
-    constructor(public target: Object) { }
+    constructor(public target: object) { }
 }
 
 export class ReferenceManager {
@@ -18,7 +18,7 @@ export class ReferenceManager {
 
     private referenceMap = new Map<string, Reference>();
 
-    public set(id: string, target: Object) {
+    public set(id: string, target: object) {
         const currentRef = this.referenceMap.get(id);
         if (currentRef !== undefined && currentRef.target !== target) {
             console.warn(`Overwriting value with id: ${id}!`);
@@ -27,7 +27,7 @@ export class ReferenceManager {
         this.referenceMap.set(id, new Reference(target));
     }
 
-    public getTarget(id: string): Object | undefined {
+    public getTarget(id: string): object | undefined {
         const reference = this.referenceMap.get(id);
 
         if (reference !== undefined) {
@@ -37,7 +37,7 @@ export class ReferenceManager {
         return undefined;
     }
 
-    public getID(target: Object): string | undefined {
+    public getID(target: object): string | undefined {
 
         for (const [id, reference] of this.referenceMap.entries()) {
             if (reference.target === target) {

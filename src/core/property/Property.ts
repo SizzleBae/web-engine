@@ -36,7 +36,7 @@ export abstract class DynamicProperty<T> {
         return this.value;
     }
 
-    public abstract toJSON(): any;
+    public abstract toJSON(): object;
     public abstract fromJSON(json: any): void;
 
 }

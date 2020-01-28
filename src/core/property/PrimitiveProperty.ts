@@ -1,12 +1,12 @@
 import { DynamicProperty } from "./Property";
 import { Serializable, META_SERIALIZABLE_ID_KEY } from "./Serializable";
 
-export type Primitive = string | number | boolean;
+export type primitive = string | number | boolean;
 
 @Serializable('core.PrimitiveProperty')
-export class PrimitiveProperty<T extends Primitive> extends DynamicProperty<T> {
+export class PrimitiveProperty<T extends primitive> extends DynamicProperty<T> {
 
-    public toJSON(): any {
+    public toJSON(): object {
         const json = {} as any;
         json['constructorID'] = Reflect.get(this.constructor, META_SERIALIZABLE_ID_KEY);
 

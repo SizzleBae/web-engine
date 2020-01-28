@@ -14,8 +14,6 @@ export class IDComponent extends LeafComponent {
 
 	public readonly id: PrimitiveProperty<string>;
 
-	public readonly loop = new ObjectProperty<TransformComponent>(new TransformComponent());
-
 	constructor(id?: string) {
 		super();
 

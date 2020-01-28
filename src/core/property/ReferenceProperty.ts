@@ -1,39 +1,78 @@
 import { DynamicProperty } from "./Property";
 import { ReferenceManager } from "./ReferenceManager";
 import uuidv1 from 'uuid/v1'
+import { META_SERIALIZABLE_ID_KEY, Serializable } from "./Serializable";
 
-export class ReferenceProperty<T extends Object> extends DynamicProperty<T> {
+@Serializable('core.ReferenceProperty')
+export class ReferenceProperty<T extends object> extends DynamicProperty<T> {
 
     private id: string | undefined;
 
-    public get(): T | null {
-        return this.value;
+    constructor(readonly?: boolean) {
+        super(undefined, readonly);
     }
 
-    public set(value: T | null): void {
+    public get(): T | null {
+        if (this.id === undefined) {
+            return null;
+        }
+
+        const reference = ReferenceManager.instance().getTarget(this.id);
+        if (reference === undefined) {
+            return null;
+        }
+
+        // TODO: Runtime type checking?
+        return reference as T;
+    }
+
+    public getSafe(): T {
+        const result = this.get();
+
+        if (result === null) {
+            throw new Error(`Get safe on ${this} failed! Get() returned null!`);
+        }
+
+        return result;
+    }
+
+    public set(target: T | null): void {
         if (this.readonly) {
             throw new Error('Attempted to set value on *readonly* dynamic property!')
         }
 
-        if (value !== null) {
-            if (ReferenceManager.instance().getID(value === undefined)) {
+        if (target !== null) {
+            const oldID = ReferenceManager.instance().getID(target);
+            if (oldID === undefined) {
                 this.id = uuidv1();
-                ReferenceManager.instance().set(this.id, value);
+            } else {
+                this.id = oldID;
             }
 
-            ReferenceManager.instance().set(value);
-            ReferenceManager.instance().inreaseReferenceCount(uuidv1());
-        }
+            ReferenceManager.instance().set(this.id, target);
+        } else {
+            this.id = undefined;
 
-        this.value = value;
+        }
     }
 
-    public toJSON() {
-        throw new Error("Method not implemented.");
+    public setID(id: string): void {
+        this.id = id;
+    }
+
+    public toJSON(): object {
+        const json = {} as any;
+        json['constructorID'] = Reflect.get(this.constructor, META_SERIALIZABLE_ID_KEY);
+
+        json['referenceID'] = this.id;
+
+        return json;
     }
 
     public fromJSON(json: any): void {
-        throw new Error("Method not implemented.");
+
+        this.id = json['referenceID'];
+
     }
 
 

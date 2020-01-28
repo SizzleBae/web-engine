@@ -3,9 +3,9 @@ import { META_SERIALIZABLE_ID_KEY, Serializable } from './Serializable';
 import { SerializableConstructorMap } from './SerializableConstructorMap';
 
 @Serializable('core.ObjectProperty')
-export class ObjectProperty<T extends Object> extends DynamicProperty<T> {
+export class ObjectProperty<T extends object> extends DynamicProperty<T> {
 
-    public toJSON(): any {
+    public toJSON(): object {
         const json = {} as any;
         json['constructorID'] = Reflect.get(this.constructor, META_SERIALIZABLE_ID_KEY);
 
