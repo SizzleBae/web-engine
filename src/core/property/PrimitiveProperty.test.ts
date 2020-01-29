@@ -20,7 +20,7 @@ describe('PrimitiveProperty', () => {
         expect(() => deserializingString.fromJSON(serializingNumber.toJSON())).toThrow();
         expect(() => deserializingNumber.fromJSON({ what: 'what' })).toThrow();
 
-        deserializingString.set(null);
+        deserializingString.set(undefined);
         expect(() => deserializingString.fromJSON(serializingNumber.toJSON())).not.toThrow();
     });
 });

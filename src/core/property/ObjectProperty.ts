@@ -12,7 +12,7 @@ export class ObjectProperty<T extends object> extends DynamicProperty<T> {
 
         json['object'] = {};
 
-        if (this.value === null) {
+        if (this.value === undefined) {
             return json;
         }
 

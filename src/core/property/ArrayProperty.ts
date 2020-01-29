@@ -9,7 +9,7 @@ export class ArrayProperty<T extends DynamicProperty<any>> extends DynamicProper
         const json = {} as any;
         json['constructorID'] = Reflect.get(this.constructor, META_SERIALIZABLE_ID_KEY);
 
-        if (this.value === null) {
+        if (this.value === undefined) {
             return json
         }
 

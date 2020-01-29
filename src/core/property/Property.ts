@@ -1,13 +1,9 @@
 export abstract class DynamicProperty<T> {
     protected readonly readonly: boolean;
-    protected value: T | null;
+    protected value: T | undefined;
 
-    constructor(defaultValue?: T | null, readonly?: boolean) {
-        if (defaultValue === undefined) {
-            this.value = null;
-        } else {
-            this.value = defaultValue;
-        }
+    constructor(defaultValue?: T, readonly?: boolean) {
+        this.value = defaultValue;
 
         if (readonly === undefined) {
             this.readonly = false;
@@ -16,11 +12,11 @@ export abstract class DynamicProperty<T> {
         }
     }
 
-    public get(): T | null {
+    public get(): T | undefined {
         return this.value;
     }
 
-    public set(value: T | null): void {
+    public set(value: T | undefined): void {
         if (this.readonly) {
             throw new Error('Attempted to set value on *readonly* dynamic property!')
         }
@@ -31,8 +27,8 @@ export abstract class DynamicProperty<T> {
     public getS(): T {
         const result = this.get();
 
-        if (result === null) {
-            throw new Error(`Get safe on ${this} failed! Get() returned null!`);
+        if (result === undefined) {
+            throw new Error(`Get safe on ${this} failed! get() returned undefined!`);
         }
 
         return result;

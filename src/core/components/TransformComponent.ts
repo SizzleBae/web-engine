@@ -13,12 +13,10 @@ export class TransformComponent extends LeafComponent {
 	public readonly y = new PrimitiveProperty<number>(4);
 	public readonly z = new PrimitiveProperty<number>(3);
 
-	public readonly rotation = new ArrayProperty([
+	public readonly rotation = new ArrayProperty<PrimitiveProperty<number>>([
 		new PrimitiveProperty(0),
 		new PrimitiveProperty(1),
-		new PrimitiveProperty<number>(2),
-		new PrimitiveProperty<string>('I snuck in here!'),
-		new PrimitiveProperty<boolean>(true),
+		new PrimitiveProperty<number>(2)
 	]);
 
 	public readonly children = new ArrayProperty([

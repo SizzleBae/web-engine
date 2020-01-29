@@ -12,26 +12,22 @@ export class ReferenceProperty<T extends object> extends DynamicProperty<T> {
         super(undefined, readonly);
     }
 
-    public get(): T | null {
+    public get(): T | undefined {
         if (this.id === undefined) {
-            return null;
+            return undefined;
         }
 
         const reference = ReferenceManager.instance().getTarget(this.id);
-        if (reference === undefined) {
-            return null;
-        }
 
-        // TODO: Runtime type checking?
-        return reference as T;
+        return reference as T | undefined;
     }
 
-    public set(target: T | null): void {
+    public set(target: T | undefined): void {
         if (this.readonly) {
             throw new Error('Attempted to set value on *readonly* dynamic property!')
         }
 
-        if (target !== null) {
+        if (target !== undefined) {
             const oldID = ReferenceManager.instance().getID(target);
             if (oldID === undefined) {
                 this.id = uuidv1();
