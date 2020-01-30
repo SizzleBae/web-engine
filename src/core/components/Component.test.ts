@@ -16,7 +16,7 @@ describe("Component", () => {
 
         compositeComponent.remove(transformComponent);
 
-        expect(compositeComponent.findChildComponent(TransformComponent)).toBeNull();
+        expect(compositeComponent.findChildComponent(TransformComponent)).toBeUndefined();
 
         expect(() => idComponent.findChildComponent(IDComponent)).toThrow();
     });
