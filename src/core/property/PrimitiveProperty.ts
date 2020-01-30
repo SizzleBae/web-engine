@@ -10,7 +10,7 @@ export class PrimitiveProperty<T extends primitive> extends DynamicProperty<T> {
         const json = {} as any;
         json['constructorID'] = Reflect.get(this.constructor, META_SERIALIZABLE_ID_KEY);
 
-        if (this.value === null) {
+        if (this.value === undefined) {
             return json
         }
 
@@ -25,7 +25,7 @@ export class PrimitiveProperty<T extends primitive> extends DynamicProperty<T> {
             throw new Error(`Failed to set primitive property ${this} from JSON, missing primitive value: ${json}`);
         }
 
-        if (json['primitive'] !== null && this.value !== null && typeof json['primitive'] !== typeof this.value) {
+        if (json['primitive'] !== undefined && this.value !== undefined && typeof json['primitive'] !== typeof this.value) {
             throw new Error(`Failed to set primitive property ${this} from JSON, invalid primitive value: ${json}`);
         }
 

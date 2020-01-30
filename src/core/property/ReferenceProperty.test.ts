@@ -14,46 +14,42 @@ class Referee {
 }
 
 let counter = 0;
-test.concurrent('ReferenceProperty', () => {
-    describe('Reading', () => {
+describe('Reading', () => {
 
-        it('can serialize', () => {
-            console.log(++counter);
-            const target = new ObjectProperty(new RefereeTarget());
+    it('can serialize', () => {
+        console.log(++counter);
+        const target = new ObjectProperty(new RefereeTarget());
 
-            // const serializing = new ObjectProperty<Referee>(new Referee());
+        // const serializing = new ObjectProperty<Referee>(new Referee());
 
-            // serializing.getS().reference.set(new IDComponent('Hi, I am ID!'));
+        // serializing.getS().reference.set(new IDComponent('Hi, I am ID!'));
 
-            // const json = serializing.toJSON();
+        // const json = serializing.toJSON();
 
-            // const deserializing = new ObjectProperty<Referee>().fromJSON(json);
+        // const deserializing = new ObjectProperty<Referee>().fromJSON(json);
 
-            // expect(deserializing.getS().reference.getS()).toBe(serializing.getS().reference.getS());
+        // expect(deserializing.getS().reference.getS()).toBe(serializing.getS().reference.getS());
 
-            // console.log(JSON.stringify(json));
+        // console.log(JSON.stringify(json));
 
-        });
     });
 });
 
-test.concurrent('ReferenceProperty', () => {
 
-    describe('Writing', () => {
-        it('can be refered to after being deserialized', () => {
-            console.log(++counter);
+describe('Writing', () => {
+    it('can be refered to after being deserialized', () => {
+        console.log(++counter);
 
-            // const jsonString = `{"constructorID":"core.ObjectProperty","object":{"constructorID":"test.ReferenceTest","reference":{"constructorID":"core.ReferenceProperty","referenceID":"0b211fc0-41f3-11ea-89ee-cb513871a604"}}}`;
+        // const jsonString = `{"constructorID":"core.ObjectProperty","object":{"constructorID":"test.ReferenceTest","reference":{"constructorID":"core.ReferenceProperty","referenceID":"0b211fc0-41f3-11ea-89ee-cb513871a604"}}}`;
 
-            // const deserializing = new ObjectProperty<Referee>().fromJSON(JSON.parse(jsonString));
+        // const deserializing = new ObjectProperty<Referee>().fromJSON(JSON.parse(jsonString));
 
-            // const referee = new RefereeTarget();
-            // referee.reference.setID('0b211fc0-41f3-11ea-89ee-cb513871a604');
+        // const referee = new RefereeTarget();
+        // referee.reference.setID('0b211fc0-41f3-11ea-89ee-cb513871a604');
 
-            // expect(referee.reference.getS()).toBe(deserializing.getS().reference.getS());
-
-        });
+        // expect(referee.reference.getS()).toBe(deserializing.getS().reference.getS());
 
     });
+
 });
 
