@@ -1,4 +1,18 @@
+import { EventDelegate } from "../event/EventDelegate";
+
+export class SerializedProperty {
+    constructor(public constructorID: string, public data: any) { }
+}
+
 export abstract class DynamicProperty<T> {
+
+    /**
+     * Fired when this property's value changes 
+     * @param args_0 Old value
+     * @param args_1 New value
+     */
+    public onPropertyChanged = new EventDelegate<[T | undefined, T | undefined]>();
+
     protected readonly readonly: boolean;
     protected value: T | undefined;
 
@@ -21,6 +35,8 @@ export abstract class DynamicProperty<T> {
             throw new Error('Attempted to set value on *readonly* dynamic property!')
         }
 
+        this.onPropertyChanged.emit(this.value, value);
+
         this.value = value;
     }
 
@@ -34,7 +50,10 @@ export abstract class DynamicProperty<T> {
         return result;
     }
 
-    public abstract toJSON(): object;
-    public abstract fromJSON(json: any): void;
+    public abstract serialize(outJSON: any, lookup: Map<object, string>): SerializedProperty;
+    public abstract deserialize(inJSON: any, property: SerializedProperty): void;
+
+    // public abstract toJSON(result: Map<string, object>): void;
+    // public abstract fromJSON(json: any): void;
 
 }

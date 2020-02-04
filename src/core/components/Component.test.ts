@@ -21,7 +21,7 @@ describe("Component", () => {
         expect(() => idComponent.findChildComponent(IDComponent)).toThrow();
     });
 
-    it("can travarese ancestors", () => {
+    it("can traverse ancestors", () => {
         const compositeComponent = new ArrayCompositeComponent();
         const compositeComponent1 = new ArrayCompositeComponent();
         const compositeComponent2 = new ArrayCompositeComponent();

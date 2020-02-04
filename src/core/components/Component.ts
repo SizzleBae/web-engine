@@ -6,8 +6,17 @@ export abstract class Component {
 	 */
 	public parent: Component | undefined;
 
-	public readonly onComponentAdd = new EventDelegate<[Component]>();
-	public readonly onComponentRemove = new EventDelegate<[Component]>();
+	/**
+	 * Fired when this component is added to another component, Component parameter is the new parent
+	 * @param Component New parent
+	 */
+	public readonly onComponentAdded = new EventDelegate<[Component]>();
+
+	/**
+	 * Fired when this component is removed from another component, Component parameter is the old parent
+	 * @param Component Old parent 
+	 */
+	public readonly onComponentRemoved = new EventDelegate<[Component]>();
 
 	public abstract [Symbol.iterator](): Iterator<Component>;
 

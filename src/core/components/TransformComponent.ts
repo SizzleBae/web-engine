@@ -8,22 +8,24 @@ import { Serializable } from "../property/Serializable";
 @Serializable('core.components.TransformComponent')
 export class TransformComponent extends LeafComponent {
 	public readonly transformParent = new ObjectProperty<IDComponent>(new IDComponent());
+	public readonly transformParent2 = new ObjectProperty<IDComponent>(new IDComponent());
+	public readonly transformParent3 = new ObjectProperty<IDComponent>(this.transformParent.getS());
 
 	public readonly x = new PrimitiveProperty<number>(5);
 	public readonly y = new PrimitiveProperty<number>(4);
 	public readonly z = new PrimitiveProperty<number>(3);
 
-	public readonly rotation = new ArrayProperty<PrimitiveProperty<number>>([
-		new PrimitiveProperty(0),
-		new PrimitiveProperty(1),
-		new PrimitiveProperty<number>(2)
-	]);
+	// public readonly rotation = new ArrayProperty<PrimitiveProperty<number>>([
+	// 	new PrimitiveProperty(0),
+	// 	new PrimitiveProperty(1),
+	// 	new PrimitiveProperty<number>(2)
+	// ]);
 
-	public readonly children = new ArrayProperty([
-		new ObjectProperty(new IDComponent()),
-		new ObjectProperty(new IDComponent()),
-		new ObjectProperty(new IDComponent()),
-	]);
+	// public readonly children = new ArrayProperty([
+	// 	new ObjectProperty(new IDComponent()),
+	// 	new ObjectProperty(new IDComponent()),
+	// 	new ObjectProperty(new IDComponent()),
+	// ]);
 
 	// public readonly ohgod = new ArrayProperty<ArrayProperty<ObjectProperty<IDComponent>>>([
 	// 	new ArrayProperty<ObjectProperty<IDComponent>>([

@@ -1,3 +1,51 @@
+import { META_SERIALIZABLE_ID_KEY } from "./Serializable";
+import { DynamicProperty } from "./Property";
+
+export class SerializeUtils {
+    static serializeObject(object: object): any {
+        const objectJSON = {} as any;
+
+        objectJSON['constructorID'] = Reflect.get(object.constructor, META_SERIALIZABLE_ID_KEY);
+
+        for (const [propertyKey, propertyValue] of Object.entries(object)) {
+            if (propertyValue instanceof DynamicProperty) {
+                objectJSON[propertyKey]['constructorID'] = Reflect.get(propertyValue.constructor, META_SERIALIZABLE_ID_KEY);
+                objectJSON[propertyKey]['propertyData'] = propertyValue.serialize(lookup);
+            }
+        }
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 // import { Primitive } from "./PrimitiveProperty";
 // import { DynamicProperty } from "./Property";
 // import { META_SERIALIZABLE_ID_KEY } from "./Serializable";
