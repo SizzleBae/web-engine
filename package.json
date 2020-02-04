@@ -24,6 +24,8 @@
     "@babel/plugin-proposal-class-properties": "^7.8.3",
     "@babel/plugin-proposal-decorators": "^7.8.3",
     "@babel/plugin-proposal-object-rest-spread": "^7.8.3",
+    "@babel/plugin-proposal-optional-chaining": "^7.8.3",
+    "@babel/plugin-transform-typescript": "^7.8.3",
     "@babel/preset-env": "^7.8.3",
     "@babel/preset-typescript": "^7.8.3",
     "@babel/types": "^7.8.3",
@@ -42,8 +44,6 @@
     "terser": "3.14.1"
   },
   "dependencies": {
-    "@babel/plugin-proposal-optional-chaining": "^7.8.3",
-    "@babel/plugin-transform-typescript": "^7.8.3",
     "reflect-metadata": "^0.1.13",
     "uuid": "^3.4.0"
   }

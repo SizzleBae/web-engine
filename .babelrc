@@ -18,6 +18,7 @@
             }
         ],
         "@babel/plugin-proposal-optional-chaining",
+        "@babel/plugin-proposal-object-rest-spread",
         "@babel/proposal-object-rest-spread"
     ]
 }
