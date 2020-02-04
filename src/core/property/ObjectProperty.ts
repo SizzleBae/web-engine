@@ -1,6 +1,7 @@
 import { DynamicProperty, SerializedProperty } from './Property';
 import { META_SERIALIZABLE_ID_KEY, Serializable } from './Serializable';
 import uuidv1 from 'uuid/v1'
+import { SerializableConstructorMap } from './SerializableConstructorMap';
 
 @Serializable('core.ObjectProperty')
 export class ObjectProperty<T extends object> extends DynamicProperty<T> {
@@ -32,7 +33,35 @@ export class ObjectProperty<T extends object> extends DynamicProperty<T> {
 
     }
 
-    public deserialize(inJSON: any, property: SerializedProperty): void {
+    public deserialize(inJSON: any, lookup: Map<string, object>, property: SerializedProperty): void {
+        const objectID = property.data;
+
+        if (!lookup.has(objectID)) {
+            const objectJSON = inJSON[objectID];
+
+            // Instantiate json object
+            const Constructor = SerializableConstructorMap.instance().getOwnerConstructor(objectJSON['constructorID']);
+            if (Constructor === undefined) {
+                throw new Error(`Failed to deserialize object property. Missing constructor id for - ${objectJSON}`)
+            }
+
+            const object = new Constructor();
+            for (const [propertyKey, propertyValue] of Object.entries(object)) {
+                if (propertyValue instanceof DynamicProperty) {
+                    const propertyJSON = objectJSON[propertyKey];
+                    if (propertyJSON === undefined) {
+                        console.warn(`Failed to set deserialize property - ${propertyValue}. Missing property data in json.`);
+                    }
+
+                    propertyValue.deserialize(inJSON, lookup, propertyJSON);
+                }
+            }
+
+            lookup.set(objectID, object);
+        }
+
+        // TODO: Type guard?
+        this.value = lookup.get(objectID) as any;
 
     }
 

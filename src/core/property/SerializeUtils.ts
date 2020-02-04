@@ -1,18 +1,21 @@
 import { META_SERIALIZABLE_ID_KEY } from "./Serializable";
 import { DynamicProperty } from "./Property";
+import { SerializableConstructorMap } from "./SerializableConstructorMap";
 
 export class SerializeUtils {
-    static serializeObject(object: object): any {
-        const objectJSON = {} as any;
+    static serializeProperty(property: DynamicProperty<any>): any {
 
-        objectJSON['constructorID'] = Reflect.get(object.constructor, META_SERIALIZABLE_ID_KEY);
+        const json = {} as any;
+        json.main = property.serialize(json, new Map());
 
-        for (const [propertyKey, propertyValue] of Object.entries(object)) {
-            if (propertyValue instanceof DynamicProperty) {
-                objectJSON[propertyKey]['constructorID'] = Reflect.get(propertyValue.constructor, META_SERIALIZABLE_ID_KEY);
-                objectJSON[propertyKey]['propertyData'] = propertyValue.serialize(lookup);
-            }
-        }
+        return json;
+
+    }
+
+    static deserializeProperty(property: DynamicProperty<any>, json: any): void {
+
+        property.deserialize(json, new Map(), json.main);
+
     }
 }
 
