@@ -1,10 +1,11 @@
 import { EventDelegate } from "../event/EventDelegate";
+import { ObjectProperty } from "../property/ObjectProperty";
 
 export abstract class Component {
 	/**
 	 * Optional parent of this component, used for efficiency purposes
 	 */
-	public parent: Component | undefined;
+	public readonly parent = new ObjectProperty<Component>();
 
 	/**
 	 * Fired when this component is added to another component, Component parameter is the new parent
@@ -51,8 +52,8 @@ export abstract class Component {
 	 */
 	public traverseAncestors(callback: (ancestor?: Component) => void) {
 		callback(this);
-		if (this.parent) {
-			this.parent.traverseAncestors(callback);
+		if (this.parent.valid()) {
+			this.parent.getS().traverseAncestors(callback);
 		}
 	}
 

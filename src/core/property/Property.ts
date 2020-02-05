@@ -50,6 +50,13 @@ export abstract class DynamicProperty<T> {
         return result;
     }
 
+    /**
+     * Returns true if the value of this property is not undefined, returns false if it is undefined
+     */
+    public valid(): boolean {
+        return this.value !== undefined;
+    }
+
     public abstract serialize(outJSON: any, lookup: Map<object, string>): SerializedProperty;
     public abstract deserialize(inJSON: any, lookup: Map<string, object>, property: SerializedProperty): void;
 

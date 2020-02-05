@@ -17,7 +17,11 @@ export class ObjectProperty<T extends object> extends DynamicProperty<T> {
             lookup.set(this.value, objectID);
 
             const objectJSON = {} as any;
-            objectJSON['constructorID'] = Reflect.get(this.value.constructor, META_SERIALIZABLE_ID_KEY);
+            const constructorID = Reflect.get(this.value.constructor, META_SERIALIZABLE_ID_KEY);
+            if (constructorID === undefined) {
+                return propertyJSON;
+            }
+            objectJSON['constructorID'] = constructorID;
 
             for (const [propertyKey, propertyValue] of Object.entries(this.value)) {
                 if (propertyValue instanceof DynamicProperty) {
@@ -36,6 +40,10 @@ export class ObjectProperty<T extends object> extends DynamicProperty<T> {
     public deserialize(inJSON: any, lookup: Map<string, object>, property: SerializedProperty): void {
         const objectID = property.data;
 
+        if (objectID === undefined) {
+            return;
+        }
+
         if (!lookup.has(objectID)) {
             const objectJSON = inJSON[objectID];
 
@@ -46,6 +54,8 @@ export class ObjectProperty<T extends object> extends DynamicProperty<T> {
             }
 
             const object = new Constructor();
+            lookup.set(objectID, object);
+
             for (const [propertyKey, propertyValue] of Object.entries(object)) {
                 if (propertyValue instanceof DynamicProperty) {
                     const propertyJSON = objectJSON[propertyKey];
@@ -56,8 +66,6 @@ export class ObjectProperty<T extends object> extends DynamicProperty<T> {
                     propertyValue.deserialize(inJSON, lookup, propertyJSON);
                 }
             }
-
-            lookup.set(objectID, object);
         }
 
         // TODO: Type guard?
