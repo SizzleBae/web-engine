@@ -57,8 +57,8 @@ export abstract class DynamicProperty<T> {
         return this.value !== undefined;
     }
 
-    public abstract serialize(outJSON: any, lookup: Map<object, string>): SerializedProperty;
-    public abstract deserialize(inJSON: any, lookup: Map<string, object>, property: SerializedProperty): void;
+    public abstract serialize(lookup: Map<object, string>): SerializedProperty;
+    public abstract deserialize(lookup: Map<string, object>, property: SerializedProperty): void;
 
     // public abstract toJSON(result: Map<string, object>): void;
     // public abstract fromJSON(json: any): void;

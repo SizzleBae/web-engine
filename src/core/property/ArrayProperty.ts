@@ -5,7 +5,7 @@ import { SerializableConstructorMap } from "./SerializableConstructorMap";
 @Serializable('core.ArrayProperty')
 export class ArrayProperty<T extends DynamicProperty<any>> extends DynamicProperty<T[]> {
 
-    public serialize(outJSON: any, lookup: Map<object, string>): SerializedProperty {
+    public serialize(lookup: Map<object, string>): SerializedProperty {
         const propertyJSON = new SerializedProperty(Reflect.get(this.constructor, META_SERIALIZABLE_ID_KEY), undefined);
         if (this.value === undefined) {
             return propertyJSON;
@@ -13,13 +13,13 @@ export class ArrayProperty<T extends DynamicProperty<any>> extends DynamicProper
 
         propertyJSON['data'] = [];
         this.value.forEach(property => {
-            propertyJSON['data'].push(property.serialize(outJSON, lookup));
+            propertyJSON['data'].push(property.serialize(lookup));
         });
 
         return propertyJSON;
     }
 
-    public deserialize(inJSON: any, lookup: Map<string, object>, property: SerializedProperty): void {
+    public deserialize(lookup: Map<string, object>, property: SerializedProperty): void {
         this.value = [];
         if (property.data === undefined) {
             return;
@@ -34,7 +34,7 @@ export class ArrayProperty<T extends DynamicProperty<any>> extends DynamicProper
             }
 
             const constructed = new Constructor() as T;
-            constructed.deserialize(inJSON, lookup, property);
+            constructed.deserialize(lookup, property);
             newArray.push(constructed);
         });
         this.value = newArray;
