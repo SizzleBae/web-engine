@@ -40,4 +40,18 @@ export class ArrayProperty<T extends DynamicProperty<any>> extends DynamicProper
         this.value = newArray;
     }
 
+    public copy(source: DynamicProperty<T[]>): void {
+        if (source.get() === undefined) {
+            this.set(undefined);
+            return;
+        }
+
+        this.value = [];
+
+        source.getS().forEach(element => {
+            this.value?.push()
+        });
+
+    }
+
 }

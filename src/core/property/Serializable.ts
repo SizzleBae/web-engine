@@ -1,5 +1,4 @@
 import { SerializableConstructorMap } from "./SerializableConstructorMap";
-import uuidv1 from 'uuid/v1'
 
 export const META_SERIALIZABLE_ID_KEY = "serializableID";
 

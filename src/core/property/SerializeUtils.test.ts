@@ -5,17 +5,6 @@ import { Serializable } from "./Serializable";
 import { ArrayProperty } from "./ArrayProperty";
 
 describe('SerializeUtils', () => {
-    // it('can handle primtives', () => {
-    //     const serializing = new PrimitiveProperty<number>(69);
-
-    //     const json = SerializeUtils.serializeProperty(serializing);
-
-    //     const deserializing = new PrimitiveProperty<number>();
-
-    //     SerializeUtils.deserializeProperty(deserializing, json);
-
-    //     expect(deserializing.getS()).toBe(serializing.getS());
-    // });
 
     @Serializable('test.ObjectTest')
     class ObjectTest {
@@ -31,7 +20,7 @@ describe('SerializeUtils', () => {
         array1 = new ArrayProperty<ObjectProperty<ObjectTest2>>([]);
     }
 
-    it('can handle objects', () => {
+    it('can serialize objects', () => {
         const serializing = new ObjectTest();
         serializing.value1.set(69);
 
@@ -43,18 +32,6 @@ describe('SerializeUtils', () => {
         expect(serializing).not.toBe(deserializing);
     });
 
-    // it('can handle nested objects', () => {
-    //     const serializing = new ObjectTest();
-    //     serializing.value1.set(69);
-
-    //     const json = SerializeUtils.serializeObjects([serializing]);
-
-    //     const deserializing = SerializeUtils.derializeObjects(json)[0] as ObjectTest;
-
-    //     expect(deserializing.value1.getS()).toBe(69);
-    //     expect(serializing).not.toBe(deserializing);
-    // });
-
     it('can find objects', () => {
         const target = new ObjectTest2();
         target.object1.set(new ObjectTest());
@@ -65,25 +42,35 @@ describe('SerializeUtils', () => {
         const target2 = new ObjectTest2();
         target2.object1.set(target.object1.get());
         target2.object2.set(target);
+        target.array1.getS().push(new ObjectProperty(target2));
 
         const searchResult = SerializeUtils.findObjects([target, target2], object => object instanceof ObjectTest2);
         expect(searchResult.length).toBe(4);
     });
 
-    // it('can handle arrays', () => {
-    //     const serializing = new ArrayProperty<ObjectProperty<ObjectTest>>([]);
-    //     serializing.getS().push(new ObjectProperty(new ObjectTest()));
-    //     serializing.getS().push(new ObjectProperty(new ObjectTest()));
-    //     serializing.getS().push(new ObjectProperty(new ObjectTest()));
-    //     serializing.getS()[1].getS().value2.set(69);
+    const target = new ObjectTest2();
+    target.object1.set(new ObjectTest());
+    target.object2.set(target);
+    target.array1.getS().push(new ObjectProperty(target));
+    target.array1.getS().push(new ObjectProperty(new ObjectTest2()));
 
-    //     const json = SerializeUtils.serializeProperty(serializing);
+    const serializedString = SerializeUtils.serializeObjects([target]);
 
-    //     const deserializing = new ArrayProperty<ObjectProperty<ObjectTest>>();
+    const deserializedTarget = SerializeUtils.derializeObjects(serializedString)[0] as ObjectTest2;
 
-    //     SerializeUtils.deserializeProperty(deserializing, json);
+    it('can serialize only relevant references', () => {
+        expect(deserializedTarget.object1.get()).toBeUndefined();
+        expect(deserializedTarget.object2.get()).toBe(deserializedTarget);
+        expect(deserializedTarget.array1.getS()[0].get()).toBe(deserializedTarget);
+        expect(deserializedTarget.array1.getS()[1].get()).toBeUndefined();
+    });
 
-    //     expect(deserializing.getS()[1].getS().value2.getS()).toBe(69);
-    //     expect(serializing.getS()[1].getS()).not.toBe(deserializing.getS()[1].getS());
-    // });
+    it('can then merge properties to share refernces', () => {
+        SerializeUtils.mergeProperties(target, deserializedTarget);
+
+        expect(deserializedTarget.object1.get()).toBe(target.object1.get());
+        expect(deserializedTarget.object2.get()).toBe(deserializedTarget);
+        expect(deserializedTarget.array1.getS()[0].get()).toBe(deserializedTarget);
+        expect(deserializedTarget.array1.getS()[1].get()).toBe(target.array1.getS()[1].get());
+    });
 });

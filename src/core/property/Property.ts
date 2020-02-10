@@ -57,6 +57,14 @@ export abstract class DynamicProperty<T> {
         return this.value !== undefined;
     }
 
+    public copy(source: DynamicProperty<T>): void {
+        this.set(source.get());
+    }
+
+    public clone(): DynamicProperty<T> {
+
+    }
+
     public abstract serialize(lookup: Map<object, string>): SerializedProperty;
     public abstract deserialize(lookup: Map<string, object>, property: SerializedProperty): void;
 
