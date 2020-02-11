@@ -1,4 +1,5 @@
 import { EventDelegate } from "../event/EventDelegate";
+import { PropertyVisitor } from "./PropertyVisitor";
 
 export class SerializedProperty {
     constructor(public constructorID: string, public data: any) { }
@@ -57,18 +58,12 @@ export abstract class DynamicProperty<T> {
         return this.value !== undefined;
     }
 
-    public copy(source: DynamicProperty<T>): void {
-        this.set(source.get());
-    }
+    public abstract accept(visitor: PropertyVisitor): void;
 
-    public clone(): DynamicProperty<T> {
-
-    }
+    public abstract copyFrom(source: DynamicProperty<T>): void;
+    public abstract clone(): DynamicProperty<T>;
 
     public abstract serialize(lookup: Map<object, string>): SerializedProperty;
     public abstract deserialize(lookup: Map<string, object>, property: SerializedProperty): void;
-
-    // public abstract toJSON(result: Map<string, object>): void;
-    // public abstract fromJSON(json: any): void;
 
 }

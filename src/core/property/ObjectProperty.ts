@@ -1,9 +1,22 @@
 import { DynamicProperty, SerializedProperty } from './Property';
 import { META_SERIALIZABLE_ID_KEY, Serializable } from './Serializable';
 import { SerializableConstructorMap } from './SerializableConstructorMap';
+import { PropertyVisitor } from './PropertyVisitor';
 
 @Serializable('core.ObjectProperty')
 export class ObjectProperty<T extends object> extends DynamicProperty<T> {
+
+    public accept(visitor: PropertyVisitor): void {
+        visitor.visitObject(this);
+    }
+
+    public copyFrom(source: DynamicProperty<T>): void {
+        this.value = source.get();
+    }
+
+    public clone(): DynamicProperty<T> {
+        return new ObjectProperty<T>(this.value, this.readonly);
+    }
 
     public serialize(lookup: Map<object, string>): SerializedProperty {
 

@@ -17,7 +17,7 @@ describe('SerializeUtils', () => {
     class ObjectTest2 {
         object1 = new ObjectProperty<ObjectTest>();
         object2 = new ObjectProperty<ObjectTest2>();
-        array1 = new ArrayProperty<ObjectProperty<ObjectTest2>>([]);
+        array1 = new ArrayProperty<ObjectTest2>([]);
     }
 
     it('can serialize objects', () => {

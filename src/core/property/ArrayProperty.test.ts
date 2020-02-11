@@ -9,33 +9,32 @@ describe('ArrayProperty', () => {
 
         @Serializable('test.ArrayTest')
         class ArrayTest {
-            rotation = new ArrayProperty<PrimitiveProperty<number>>([
+            rotation = new ArrayProperty([
                 new PrimitiveProperty<number>(0),
                 new PrimitiveProperty<number>(1),
                 new PrimitiveProperty<number>(2)
             ]);
 
-            woah = new ArrayProperty<ObjectProperty<ArrayTest>>([]);
+            woah = new ArrayProperty<ArrayTest>([]);
         }
 
-        const serializing = new ObjectProperty<ArrayTest>(new ArrayTest());
-        serializing.getS().rotation.getS()[1].set(69);
-        serializing.getS().woah.getS().push(new ObjectProperty(new ArrayTest()));
-        serializing.getS().woah.getS().push(new ObjectProperty(new ArrayTest()));
-        serializing.getS().woah.getS().push(new ObjectProperty(new ArrayTest()));
-        serializing.getS().woah.getS()[1].getS().rotation.getS()[1].set(96);
+        const serializing = new ArrayTest();
+        serializing.rotation.getS()[1].set(69);
+        serializing.woah.getS().push(new ObjectProperty(new ArrayTest()));
+        serializing.woah.getS().push(new ObjectProperty(new ArrayTest()));
+        serializing.woah.getS().push(new ObjectProperty(new ArrayTest()));
+        serializing.woah.getS()[1].getS().rotation.getS()[1].set(96);
 
-        const json = SerializeUtils.serializeProperty(serializing);
+        const json = SerializeUtils.serializeObjects([ArrayTest]);
 
-        const deserializing = new ObjectProperty<ArrayTest>();
-        SerializeUtils.deserializeProperty(deserializing, json);
+        const deserializing = SerializeUtils.derializeObjects(json)[0] as ArrayTest;
 
-        for (let i = 0; i < serializing.getS().rotation.getS().length; i++) {
-            const original = serializing.getS().rotation.getS()[i].getS();
-            const duplicate = deserializing.getS().rotation.getS()[i].getS();
+        for (let i = 0; i < serializing.rotation.getS().length; i++) {
+            const original = serializing.rotation.getS()[i].getS();
+            const duplicate = deserializing.rotation.getS()[i].getS();
             expect(original).toBe(duplicate)
         }
-        expect(deserializing.getS().woah.getS()[1].getS().rotation.getS()[1].getS()).toBe(96);
+        expect(deserializing.woah.getS()[1].getS().rotation.getS()[1].getS()).toBe(96);
 
     });
 });

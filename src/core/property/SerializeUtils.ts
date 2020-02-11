@@ -4,6 +4,7 @@ import { SerializableConstructorMap } from "./SerializableConstructorMap";
 import { ObjectProperty } from "./ObjectProperty";
 import { ArrayProperty } from "./ArrayProperty";
 import uuidv1 from 'uuid/v1'
+import { PropertyUtils } from "./PropertyUtils";
 
 export class SerializeUtils {
 
@@ -23,11 +24,9 @@ export class SerializeUtils {
             if (constructorID !== undefined) {
                 objectJSON['constructorID'] = constructorID;
 
-                for (const [propertyKey, propertyValue] of Object.entries(object)) {
-                    if (propertyValue instanceof DynamicProperty) {
-                        objectJSON[propertyKey] = propertyValue.serialize(lookup);
-                    }
-                }
+                PropertyUtils.forEachPropertyIn(object, (property, key) => {
+                    objectJSON[key] = property.serialize(lookup);
+                });
 
                 outJSON[lookup.get(object) as string] = objectJSON;
             }
@@ -57,16 +56,15 @@ export class SerializeUtils {
         for (const [objectID, object] of lookup) {
             const objectJSON = inJSON[objectID];
 
-            for (const [propertyKey, propertyValue] of Object.entries(object)) {
-                if (propertyValue instanceof DynamicProperty) {
-                    const propertyJSON = objectJSON[propertyKey];
-                    if (propertyJSON === undefined) {
-                        console.warn(`Failed to deserialize property - ${propertyValue}. Missing property data in json.`);
-                    }
-
-                    propertyValue.deserialize(lookup, propertyJSON);
+            PropertyUtils.forEachPropertyIn(object, (property, key) => {
+                const propertyJSON = objectJSON[key];
+                if (propertyJSON === undefined) {
+                    console.warn(`Failed to deserialize property - ${property}. Missing property data in json.`);
                 }
-            }
+
+                property.deserialize(lookup, propertyJSON);
+
+            });
 
             result.push(object);
         }
@@ -81,35 +79,44 @@ export class SerializeUtils {
      * @param source The object with properties to copy from
      * @param target The object that will receive copied properties
      */
-    static mergeProperties(source: object, target: object) {
-        // Extract source properties
-        const sourceProperties = new Map<string, DynamicProperty<any>>();
-        for (const [propertyKey, propertyValue] of Object.entries(source)) {
-            if (propertyValue instanceof DynamicProperty) {
-                sourceProperties.set(propertyKey, propertyValue);
-            }
-        }
+    // static mergeProperties(source: object, target: object) {
+    //     // Extract source properties
+    //     const sourceProperties = new Map<string, DynamicProperty<any>>();
+    //     PropertyUtils.forEachPropertyIn(source, (property, key) => {
+    //         sourceProperties.set(key, property);
+    //     })
 
-        // Extract target properties
-        const targetProperties = new Map<string, DynamicProperty<any>>();
-        for (const [propertyKey, propertyValue] of Object.entries(target)) {
-            if (propertyValue instanceof DynamicProperty) {
-                targetProperties.set(propertyKey, propertyValue);
-            }
-        }
+    //     // Extract target properties
+    //     const targetProperties = new Map<string, DynamicProperty<any>>();
+    //     for (const [propertyKey, propertyValue] of Object.entries(target)) {
+    //         if (propertyValue instanceof DynamicProperty) {
+    //             targetProperties.set(propertyKey, propertyValue);
+    //         }
+    //     }
 
-        sourceProperties.forEach((sourceProperty, sourceKey) => {
-            if (targetProperties.has(sourceKey)) {
-                const targetProperty = targetProperties.get(sourceKey) as DynamicProperty<any>;
+    //     const merge = (source: DynamicProperty<any>, target: DynamicProperty<any>) => {
+    //         if (target.get() === undefined) {
+    //             target.copyFrom(source);
+    //         }
+    //     };
+    //     sourceProperties.forEach((sourceProperty, sourceKey) => {
+    //         if (targetProperties.has(sourceKey)) {
+    //             const targetProperty = targetProperties.get(sourceKey) as DynamicProperty<any>;
 
-                if (targetProperty instanceof sourceProperty.constructor) {
-                    if (targetProperty.get() === undefined) {
-                        targetProperty.set(sourceProperty.get());
-                    }
-                }
-            }
-        });
-    }
+    //             // TODO: Find a way to avoid branching on array properties, it's not pretty
+    //             if (targetProperty instanceof sourceProperty.constructor) {
+    //                 if (targetProperty instanceof ArrayProperty) {
+    //                     for (let i = 0; i < sourceProperty)
+    //                     // sourceProperty.getS().forEach((element: DynamicProperty<any>) => {
+    //                     //     merge(sourceProperty, element);
+    //                     // });
+    //                 } else {
+    //                     merge(sourceProperty, targetProperty);
+    //                 }
+    //             }
+    //         }
+    //     });
+    // }
 
     static findObjects(entries: object[], predicate: (object: any) => boolean): object[] {
         const result: object[] = [];
