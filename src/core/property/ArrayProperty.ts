@@ -44,9 +44,6 @@ export class ArrayProperty<T> extends DynamicProperty<DynamicProperty<T>[]> {
         this.value = newArray;
     }
 
-
-
-
     public copyFrom(source: DynamicProperty<DynamicProperty<T>[]>): void {
         const sourceArray = source.get();
         if (sourceArray === undefined) {
