@@ -9,16 +9,28 @@ export class PropertyMerger extends PropertyVisitor {
 
     private writing = false;
 
+    private currentSourceProperty: DynamicProperty<any> | undefined;
+
     mergePropertyOwners(source: object, target: object): void {
-        PropertyUtils.forEachPropertyIn(source, (property) => {
-            property.accept(this);
-        })
+        PropertyUtils.forEachPropertyIn(source, (property, key) => {
 
-        this.writing = true;
+            // Find corresponding property in target
+            const targetProperty = (target as any)[key];
 
-        PropertyUtils.forEachPropertyIn(target, (property) => {
-            property.accept(this);
+            if (targetProperty !== undefined && targetProperty instanceof DynamicProperty) {
+                this.currentSourceProperty = property;
+                targetProperty.accept(this);
+            } else {
+                console.warn(`Merging failed for property with key ${key}! Property missing in target: ${target}`);
+            }
+
         });
+
+        // this.writing = true;
+
+        // PropertyUtils.forEachPropertyIn(target, (property) => {
+        //     property.accept(this);
+        // });
     }
 
     visitPrimitive<T extends primitive>(property: PrimitiveProperty<T>): void {
