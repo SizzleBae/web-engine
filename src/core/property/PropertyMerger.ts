@@ -9,6 +9,8 @@ export class PropertyMerger extends PropertyVisitor {
 
     private writing = false;
 
+    private currentSourceProperty: DynamicProperty<any> | undefined;
+
     mergePropertyOwners(source: object, target: object): void {
         PropertyUtils.forEachPropertyIn(source, (property, key) => {
 
