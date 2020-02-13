@@ -8,4 +8,8 @@ export class PropertyUtils {
             }
         }
     }
+
+    static getPropertyIn(object: object, key: string): DynamicProperty<any> | undefined {
+        return (object as any)[key];
+    }
 }

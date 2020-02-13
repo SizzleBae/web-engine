@@ -10,15 +10,40 @@ export class PropertyMerger extends PropertyVisitor {
     private writing = false;
 
     mergePropertyOwners(source: object, target: object): void {
-        PropertyUtils.forEachPropertyIn(source, (property) => {
-            property.accept(this);
+        PropertyUtils.forEachPropertyIn(source, (property, key) => {
+
+            this.mergeProperty(property, PropertyUtils.getPropertyIn(target, key));
+
         })
 
-        this.writing = true;
+    }
 
-        PropertyUtils.forEachPropertyIn(target, (property) => {
-            property.accept(this);
-        });
+    mergeProperty(source: DynamicProperty<any> | undefined, target: DynamicProperty<any> | undefined): void {
+        if (source === undefined || target === undefined) {
+            console.warn(`Attempted to merge incompatible properties! ${source} - ${target}`);
+            return;
+        }
+
+        if (source.get() === undefined) {
+            return;
+        }
+
+        if (source instanceof ArrayProperty) {
+            if (target.get() === undefined) {
+                target.set([]);
+            }
+
+            for (let i = 0; i < source.get().length; i++) {
+                this.mergeProperty(source.get()[i], target.get()[i]);
+            }
+            return;
+        }
+
+        if (target.get() !== undefined) {
+            return;
+        }
+
+        target.copyFrom(source);
     }
 
     visitPrimitive<T extends primitive>(property: PrimitiveProperty<T>): void {
