@@ -1,10 +1,9 @@
 import { META_SERIALIZABLE_ID_KEY } from "./Serializable";
-import { DynamicProperty } from "./Property";
 import { SerializableConstructorMap } from "./SerializableConstructorMap";
 import { ObjectProperty } from "./ObjectProperty";
 import { ArrayProperty } from "./ArrayProperty";
-import uuidv1 from 'uuid/v1'
 import { PropertyUtils } from "./PropertyUtils";
+import uuidv1 from 'uuid/v1'
 
 export class SerializeUtils {
 
