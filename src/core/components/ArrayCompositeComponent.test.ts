@@ -13,24 +13,23 @@ describe('ArrayCompositeComponent', () => {
     }
 
     it('can serialize', () => {
-        const serializingArray = new ObjectProperty(new ArrayCompositeComponent());
+        const originalArrayComp = new ArrayCompositeComponent();
         const serializingChild1 = new TestComponent();
         const serializingChild2 = new TestComponent();
         const serializingChild3 = new TestComponent();
-        serializingArray.getS().add(serializingChild1);
-        serializingArray.getS().add(serializingChild2);
-        serializingArray.getS().add(serializingChild3);
+        originalArrayComp.add(serializingChild1);
+        originalArrayComp.add(serializingChild2);
+        originalArrayComp.add(serializingChild3);
         serializingChild3.reference.set(serializingChild1);
         serializingChild1.reference.set(serializingChild3);
         serializingChild1.payload.set(`Here's the payload!!`);
 
-        const json = SerializeUtils.serializeProperty(serializingArray)
+        const json = SerializeUtils.serializeObjects(SerializeUtils.findObjects([originalArrayComp], () => true));
 
-        const deserializingArray = new ObjectProperty<ArrayCompositeComponent>();
-        SerializeUtils.deserializeProperty(deserializingArray, json);
+        const duplicateArrayComp = SerializeUtils.derializeObjects(json)[0] as ArrayCompositeComponent;
 
         let success = false;
-        for (const child of deserializingArray.getS()) {
+        for (const child of duplicateArrayComp) {
             if (child instanceof TestComponent) {
                 if (child.payload.getS() === `Here's the payload!!`) {
                     success = true;

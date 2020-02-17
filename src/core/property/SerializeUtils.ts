@@ -72,13 +72,13 @@ export class SerializeUtils {
         return result;
     }
 
-    /**
-     * Copies properties that have the same key and same property type from source to target.
-     * 
-     * Only properties that have undefined values in target are overriden.
-     * @param source The object with properties to copy from
-     * @param target The object that will receive copied properties
-     */
+    // /**
+    //  * Copies properties that have the same key and same property type from source to target.
+    //  * 
+    //  * Only properties that have undefined values in target are overriden.
+    //  * @param source The object with properties to copy from
+    //  * @param target The object that will receive copied properties
+    //  */
     // static mergeProperties(source: object, target: object) {
     //     // Extract source properties
     //     const sourceProperties = new Map<string, DynamicProperty<any>>();

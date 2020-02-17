@@ -4,59 +4,50 @@ import { ObjectProperty } from "./ObjectProperty";
 import { ArrayProperty } from "./ArrayProperty";
 import { DynamicProperty } from "./Property";
 import { PropertyUtils } from "./PropertyUtils";
+import { isReturnStatement } from "@babel/types";
 
 export class PropertyMerger extends PropertyVisitor {
-
-    private writing = false;
 
     private currentSourceProperty: DynamicProperty<any> | undefined;
 
     mergePropertyOwners(source: object, target: object): void {
         PropertyUtils.forEachPropertyIn(source, (property, key) => {
 
-            this.mergeProperty(property, PropertyUtils.getPropertyIn(target, key));
+            this.attemptMergeProperty(property, PropertyUtils.getPropertyIn(target, key));
 
         })
-
     }
 
-    mergeProperty(source: DynamicProperty<any> | undefined, target: DynamicProperty<any> | undefined): void {
-        if (source === undefined || target === undefined) {
-            console.warn(`Attempted to merge incompatible properties! ${source} - ${target}`);
-            return;
+    attemptMergeProperty(source: DynamicProperty<any> | undefined, target: DynamicProperty<any> | undefined): void {
+        if (source && target) {
+            this.currentSourceProperty = source;
+
+            target.accept(this);
         }
-
-        if (source.get() === undefined) {
-            return;
-        }
-
-        if (source instanceof ArrayProperty) {
-            if (target.get() === undefined) {
-                target.set([]);
-            }
-
-            for (let i = 0; i < source.get().length; i++) {
-                this.mergeProperty(source.get()[i], target.get()[i]);
-            }
-            return;
-        }
-
-        if (target.get() !== undefined) {
-            return;
-        }
-
-        target.copyFrom(source);
     }
 
     visitPrimitive<T extends primitive>(property: PrimitiveProperty<T>): void {
-
+        if (this.currentSourceProperty !== undefined && property.get() === undefined) {
+            property.copyFrom(this.currentSourceProperty);
+        }
     }
 
     visitObject<T extends object>(property: ObjectProperty<T>): void {
-
+        if (this.currentSourceProperty !== undefined && property.get() === undefined) {
+            property.copyFrom(this.currentSourceProperty);
+        }
     }
 
     visitArray<T>(property: ArrayProperty<T>): void {
-        property.get()?.forEach(element => element.accept(this));
+
+        const currentSourceArray = this.currentSourceProperty;
+        if (currentSourceArray === undefined) {
+            return;
+        }
+
+        for (let i = 0; i < currentSourceArray.get().length; i++) {
+            this.attemptMergeProperty(currentSourceArray.get()?.[i], property.get()?.[i]);
+        }
+
     }
 }

@@ -6,7 +6,7 @@ import { Serializable } from "../property/Serializable";
 
 @Serializable('core.components.ArrayCompositeComponent')
 export class ArrayCompositeComponent extends CompositeComponent {
-	private readonly children = new ArrayProperty<ObjectProperty<Component>>([]);
+	private readonly children = new ArrayProperty<Component>([]);
 
 	public [Symbol.iterator](): Iterator<Component> {
 		return this.children.getS().map(child => child.getS())[Symbol.iterator]();

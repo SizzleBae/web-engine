@@ -64,13 +64,4 @@ describe('SerializeUtils', () => {
         expect(deserializedTarget.array1.getS()[0].get()).toBe(deserializedTarget);
         expect(deserializedTarget.array1.getS()[1].get()).toBeUndefined();
     });
-
-    it('can then merge properties to share refernces', () => {
-        SerializeUtils.mergeProperties(target, deserializedTarget);
-
-        expect(deserializedTarget.object1.get()).toBe(target.object1.get());
-        expect(deserializedTarget.object2.get()).toBe(deserializedTarget);
-        expect(deserializedTarget.array1.getS()[0].get()).toBe(deserializedTarget);
-        expect(deserializedTarget.array1.getS()[1].get()).toBe(target.array1.getS()[1].get());
-    });
 });
