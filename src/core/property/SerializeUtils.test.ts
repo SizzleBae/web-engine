@@ -54,14 +54,21 @@ describe('SerializeUtils', () => {
     target.array1.getS().push(new ObjectProperty(target));
     target.array1.getS().push(new ObjectProperty(new ObjectTest2()));
 
-    const serializedString = SerializeUtils.serializeObjects([target]);
-
-    const deserializedTarget = SerializeUtils.derializeObjects(serializedString)[0] as ObjectTest2;
+    const deserializedNoRefs = SerializeUtils.derializeObjects(SerializeUtils.serializeObjects([target], false))[0] as ObjectTest2;
 
     it('can serialize only relevant references', () => {
-        expect(deserializedTarget.object1.get()).toBeUndefined();
-        expect(deserializedTarget.object2.get()).toBe(deserializedTarget);
-        expect(deserializedTarget.array1.getS()[0].get()).toBe(deserializedTarget);
-        expect(deserializedTarget.array1.getS()[1].get()).toBeUndefined();
+        expect(deserializedNoRefs.object1.get()).toBeUndefined();
+        expect(deserializedNoRefs.object2.get()).toBe(deserializedNoRefs);
+        expect(deserializedNoRefs.array1.getS()[0].get()).toBe(deserializedNoRefs);
+        expect(deserializedNoRefs.array1.getS()[1].get()).toBeUndefined();
+    });
+
+    const deserializedRefs = SerializeUtils.derializeObjects(SerializeUtils.serializeObjects([target], true))[0] as ObjectTest2;
+
+    it('can serialize and keep external references', () => {
+        expect(deserializedRefs.object1.get()).toBe(target.object1.get());
+        expect(deserializedRefs.object2.get()).toBe(deserializedRefs);
+        expect(deserializedRefs.array1.getS()[0].get()).toBe(deserializedRefs);
+        expect(deserializedRefs.array1.getS()[1].get()).toBe(target.array1.getS()[1].get());
     });
 });

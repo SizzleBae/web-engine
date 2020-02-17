@@ -25,7 +25,7 @@ describe('ArrayProperty', () => {
         serializing.woah.getS().push(new ObjectProperty(new ArrayTest()));
         serializing.woah.getS()[1].getS().rotation.getS()[1].set(96);
 
-        const json = SerializeUtils.serializeObjects([ArrayTest]);
+        const json = SerializeUtils.serializeObjects(SerializeUtils.findObjects([serializing], () => true));
 
         const deserializing = SerializeUtils.derializeObjects(json)[0] as ArrayTest;
 
