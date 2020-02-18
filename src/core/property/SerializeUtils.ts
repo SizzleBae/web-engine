@@ -36,6 +36,10 @@ export class SerializeUtils {
     //     return JSON.stringify(outJSON);
     // }
 
+    static cloneObjects(targets: object[]) {
+        SerializeUtils.derializeObjects(SerializeUtils.serializeObjects(targets, true));
+    }
+
     static serializeObjects(targets: object[], keepExternal: boolean = false): any {
         // Create lookup for given objects using uuid
         const lookup = new Map<object, string>();
@@ -182,37 +186,37 @@ export class SerializeUtils {
     //     });
     // }
 
-    static findObjects(entries: object[], predicate: (object: any) => boolean): object[] {
-        const result: object[] = [];
+    // static findObjects(entries: object[], predicate: (object: any) => boolean = () => true): object[] {
+    //     const result: object[] = [];
 
-        entries.forEach(entry => {
-            this.recursiveObjectSearch(result, entry, predicate);
-        });
+    //     entries.forEach(entry => {
+    //         this.recursiveObjectSearch(result, entry, predicate);
+    //     });
 
-        return result;
-    }
+    //     return result;
+    // }
 
-    private static recursiveObjectSearch(result: object[], current: object, predicate: (object: any) => boolean) {
-        if (current === undefined) {
-            return;
-        }
+    // private static recursiveObjectSearch(result: object[], current: object, predicate: (object: any) => boolean) {
+    //     if (current === undefined) {
+    //         return;
+    //     }
 
-        if (predicate(current) && !result.includes(current)) {
-            result.push(current);
+    //     if (predicate(current) && !result.includes(current)) {
+    //         result.push(current);
 
-            for (const [propertyKey, propertyValue] of Object.entries(current)) {
+    //         for (const [propertyKey, propertyValue] of Object.entries(current)) {
 
-                if (propertyValue instanceof ObjectProperty) {
-                    SerializeUtils.recursiveObjectSearch(result, propertyValue.get(), predicate);
+    //             if (propertyValue instanceof ObjectProperty) {
+    //                 SerializeUtils.recursiveObjectSearch(result, propertyValue.get(), predicate);
 
-                } else if (propertyValue instanceof ArrayProperty) {
-                    propertyValue.get()?.forEach(element => {
-                        if (element instanceof ObjectProperty) {
-                            SerializeUtils.recursiveObjectSearch(result, element.get(), predicate);
-                        }
-                    });
-                }
-            }
-        }
-    }
+    //             } else if (propertyValue instanceof ArrayProperty) {
+    //                 propertyValue.get()?.forEach(element => {
+    //                     if (element instanceof ObjectProperty) {
+    //                         SerializeUtils.recursiveObjectSearch(result, element.get(), predicate);
+    //                     }
+    //                 });
+    //             }
+    //         }
+    //     }
+    // }
 }

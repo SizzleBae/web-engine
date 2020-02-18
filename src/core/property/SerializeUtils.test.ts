@@ -32,29 +32,13 @@ describe('SerializeUtils', () => {
         expect(serializing).not.toBe(deserializing);
     });
 
-    it('can find objects', () => {
-        const target = new ObjectTest2();
-        target.object1.set(new ObjectTest());
-        target.object2.set(new ObjectTest2());
-        target.object2.getS().object2.set(target);
-        target.array1.getS().push(new ObjectProperty(target));
-        target.array1.getS().push(new ObjectProperty(new ObjectTest2()));
-        const target2 = new ObjectTest2();
-        target2.object1.set(target.object1.get());
-        target2.object2.set(target);
-        target.array1.getS().push(new ObjectProperty(target2));
-
-        const searchResult = SerializeUtils.findObjects([target, target2], object => object instanceof ObjectTest2);
-        expect(searchResult.length).toBe(4);
-    });
-
     const target = new ObjectTest2();
     target.object1.set(new ObjectTest());
     target.object2.set(target);
     target.array1.getS().push(new ObjectProperty(target));
     target.array1.getS().push(new ObjectProperty(new ObjectTest2()));
 
-    const deserializedNoRefs = SerializeUtils.derializeObjects(SerializeUtils.serializeObjects([target], false))[0] as ObjectTest2;
+    const deserializedNoRefs = SerializeUtils.derializeObjects(JSON.parse(JSON.stringify(SerializeUtils.serializeObjects([target], false))))[0] as ObjectTest2;
 
     it('can serialize only relevant references', () => {
         expect(deserializedNoRefs.object1.get()).toBeUndefined();
