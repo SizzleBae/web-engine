@@ -1,11 +1,9 @@
 import { META_SERIALIZABLE_ID_KEY } from "./Serializable";
 import { SerializableConstructorMap } from "./SerializableConstructorMap";
-import { ObjectProperty } from "./ObjectProperty";
-import { ArrayProperty } from "./ArrayProperty";
 import { PropertyUtils } from "./PropertyUtils";
 import { PropertySerializer } from "./PropertySerializer";
-import uuidv1 from 'uuid/v1'
 import { PropertyDeserializer } from "./PropertyDeserializer";
+import uuidv1 from 'uuid/v1'
 
 export class SerializeUtils {
 
@@ -36,8 +34,8 @@ export class SerializeUtils {
     //     return JSON.stringify(outJSON);
     // }
 
-    static cloneObjects(targets: object[]) {
-        SerializeUtils.derializeObjects(SerializeUtils.serializeObjects(targets, true));
+    static cloneObjects(targets: object[]): object[] {
+        return SerializeUtils.derializeObjects(SerializeUtils.serializeObjects(targets, true));
     }
 
     static serializeObjects(targets: object[], keepExternal: boolean = false): any {

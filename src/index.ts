@@ -1,9 +1,3 @@
-import { ArrayCompositeComponent } from "./core/components/ArrayCompositeComponent";
-import { TransformComponent } from "./core/components/TransformComponent";
+import { IDComponent } from "./core/components/IDComponent";
 
-let composite = new ArrayCompositeComponent();
-composite.add(new TransformComponent());
-
-let child = composite.findChildComponent(TransformComponent);
-if (child) {
-}
+const id = new IDComponent();

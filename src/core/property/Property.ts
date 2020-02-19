@@ -7,8 +7,9 @@ export abstract class DynamicProperty<T> {
      * Fired when this property's value changes 
      * @param args_0 Old value
      * @param args_1 New value
+     * @param args_2 This property
      */
-    public onPropertyChanged = new EventDelegate<[T | undefined, T | undefined]>();
+    public onPropertyChanged = new EventDelegate<[T | undefined, T | undefined, DynamicProperty<T>]>();
 
     protected readonly readonly: boolean;
     protected value: T | undefined;
@@ -32,7 +33,7 @@ export abstract class DynamicProperty<T> {
             throw new Error('Attempted to set value on *readonly* dynamic property!')
         }
 
-        this.onPropertyChanged.emit(this.value, value);
+        this.onPropertyChanged.emit(this.value, value, this);
 
         this.value = value;
     }
