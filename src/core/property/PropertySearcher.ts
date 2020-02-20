@@ -4,7 +4,7 @@ import { ObjectProperty } from "./ObjectProperty";
 import { ArrayProperty } from "./ArrayProperty";
 import { PropertyUtils } from "./PropertyUtils";
 
-export class PropertySearcher extends PropertyVisitor {
+export class PropertySearcher implements PropertyVisitor {
 
     entries: object[] = [];
 

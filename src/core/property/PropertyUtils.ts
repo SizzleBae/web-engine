@@ -1,4 +1,4 @@
-import { DynamicProperty } from "./Property";
+import { DynamicProperty } from "../new-property/DynamicProperty";
 
 export class PropertyUtils {
     static forEachPropertyIn(propertyOwner: object, action: (property: DynamicProperty<any>, key: string) => void): void {

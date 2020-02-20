@@ -6,12 +6,11 @@ import { PropertySerializer, SerializedProperty } from "./PropertySerializer";
 import { DynamicProperty } from "./Property";
 import { SerializableConstructorMap } from "./SerializableConstructorMap";
 
-export class PropertyDeserializer extends PropertyVisitor {
+export class PropertyDeserializer implements PropertyVisitor {
 
     private propertyData: SerializedProperty = new SerializedProperty("MISSING CONSTRUCTOR", undefined);
 
     constructor(private lookup?: Map<string, object>) {
-        super();
     }
 
     deserialize(data: SerializedProperty): DynamicProperty<any> {

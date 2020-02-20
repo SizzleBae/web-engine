@@ -9,14 +9,13 @@ export class SerializedProperty {
     constructor(public constructorID: string, public data: any) { }
 }
 
-export class PropertySerializer extends PropertyVisitor {
+export class PropertySerializer implements PropertyVisitor {
 
     private result: SerializedProperty = new SerializedProperty("MISSING CONSTRUCTOR", undefined);
 
     constructor(
         private keepExternal: boolean = true,
         private lookup?: Map<object, string>) {
-        super();
     }
 
     serialize(property: DynamicProperty<any>): SerializedProperty {
