@@ -6,48 +6,51 @@ import { PropertyVisitor } from "./PropertyVisitor";
 
 @Serializable('core.property.ArrayStrategy')
 export class ArrayStrategy<T> implements PropertyStrategy<DynamicProperty<T>[]> {
+    copy(property: DynamicProperty<DynamicProperty<T>[]>, target: DynamicProperty<DynamicProperty<T>[]>): void {
 
-    accept(visitor: PropertyVisitor, property: DynamicProperty<DynamicProperty<T>[]>): void {
-        visitor.visitArray(property, this);
+    }
+
+    accept(property: DynamicProperty<DynamicProperty<T>[]>, visitor: PropertyVisitor): void {
+        visitor.visitArray(property);
     }
 
 
-    serialize(value: DynamicProperty<T>[] | undefined, lookup: Map<object, string>): SerializedObject {
-        const serializedProperty = new SerializedObject();
+    // serialize(value: DynamicProperty<T>[] | undefined, lookup: Map<object, string>): SerializedObject {
+    //     const serializedProperty = new SerializedObject();
 
-        if (value) {
-            const serializedArray: SerializedObject[] = [];
+    //     if (value) {
+    //         const serializedArray: SerializedObject[] = [];
 
-            value.forEach(subProperty => {
-                serializedArray.push(subProperty.serialize(lookup));
-            })
+    //         value.forEach(subProperty => {
+    //             serializedArray.push(subProperty.serialize(lookup));
+    //         })
 
-            serializedProperty.data = serializedArray;
-        }
+    //         serializedProperty.data = serializedArray;
+    //     }
 
-        return serializedProperty;
-    }
+    //     return serializedProperty;
+    // }
 
-    deserialize(data: SerializedObject, lookup: Map<string, object>): DynamicProperty<T>[] | undefined {
-        const serializedArray = data.data as SerializedObject[];
+    // deserialize(data: SerializedObject, lookup: Map<string, object>): DynamicProperty<T>[] | undefined {
+    //     const serializedArray = data.data as SerializedObject[];
 
-        if (serializedArray) {
-            const deserializedArray: DynamicProperty<T>[] = [];
+    //     if (serializedArray) {
+    //         const deserializedArray: DynamicProperty<T>[] = [];
 
-            serializedArray.forEach(serializedSubProperty => {
-                const deserializedSubStrategy = serializedSubProperty.construct() as PropertyStrategy<T>;
-                const deserializedSubProperty = new DynamicProperty<T>(deserializedSubStrategy);
+    //         serializedArray.forEach(serializedSubProperty => {
+    //             const deserializedSubStrategy = serializedSubProperty.construct() as PropertyStrategy<T>;
+    //             const deserializedSubProperty = new DynamicProperty<T>(deserializedSubStrategy);
 
-                deserializedSubProperty.deserialize(serializedSubProperty, lookup);
+    //             deserializedSubProperty.deserialize(serializedSubProperty, lookup);
 
-                deserializedArray.push(deserializedSubProperty);
-            });
+    //             deserializedArray.push(deserializedSubProperty);
+    //         });
 
-            return deserializedArray;
-        }
+    //         return deserializedArray;
+    //     }
 
-        return undefined;
-    }
+    //     return undefined;
+    // }
 
 
 }

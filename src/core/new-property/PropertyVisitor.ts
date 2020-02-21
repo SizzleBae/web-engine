@@ -3,9 +3,11 @@ import { PropertyStrategy } from "./PropertyStrategy";
 
 export interface PropertyVisitor {
 
-    visitString(property: DynamicProperty<string>, strategy: PropertyStrategy<string>): void;
-    visitArray<T>(property: DynamicProperty<DynamicProperty<T>[]>, strategy: PropertyStrategy<DynamicProperty<T>[]>): void;
-    visitObjectData(property: DynamicProperty<object>, strategy: PropertyStrategy<object>): void;
-    visitObjectReference(property: DynamicProperty<object>, strategy: PropertyStrategy<object>): void;
+    visitString(property: DynamicProperty<string>): void;
+    visitNumber(property: DynamicProperty<number>): void;
+    visitBoolean(property: DynamicProperty<boolean>): void;
+    visitObjectData(property: DynamicProperty<object>): void;
+    visitObjectReference(property: DynamicProperty<object>): void;
+    visitArray<T>(property: DynamicProperty<DynamicProperty<T>[]>): void;
 
 }

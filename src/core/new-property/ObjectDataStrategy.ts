@@ -9,7 +9,7 @@ import { DynamicProperty } from "./DynamicProperty";
 export class ObjectDataStrategy implements PropertyStrategy<object> {
 
     accept(visitor: PropertyVisitor, property: DynamicProperty<object>): void {
-        visitor.visitObjectData(property, this);
+        visitor.visitObjectData(property);
     }
 
     serialize(value: object | undefined, lookup: Map<object, string>): SerializedObject {

@@ -8,7 +8,7 @@ import { DynamicProperty } from "./DynamicProperty";
 export class ObjectReferenceStrategy implements PropertyStrategy<object> {
 
     accept(visitor: PropertyVisitor, property: DynamicProperty<object>): void {
-        visitor.visitObjectReference(property, this);
+        visitor.visitObjectReference(property);
     }
 
     serialize(value: object | undefined, lookup: Map<object, string>): SerializedObject {

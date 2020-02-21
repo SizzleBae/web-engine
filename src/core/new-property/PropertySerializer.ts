@@ -1,24 +1,80 @@
 import { PropertyVisitor } from "./PropertyVisitor";
 import { DynamicProperty } from "./DynamicProperty";
-import { PropertyStrategy } from "./PropertyStrategy";
+import { SerializedObject } from "./SerializedObject";
+import { PropertyUtils } from "../property/PropertyUtils";
 
 export class PropertySerializer implements PropertyVisitor {
 
-    visitString(property: DynamicProperty<string>, strategy: PropertyStrategy<string>): void {
+    private result: SerializedObject = new SerializedObject();
 
+    constructor(
+        private keepExternal: boolean = true,
+        private lookup: Map<object, string> = new Map<object, string>()) {
     }
 
-    visitArray<T>(property: DynamicProperty<DynamicProperty<T>[]>, strategy: PropertyStrategy<DynamicProperty<T>[]>): void {
+    serialize(property: DynamicProperty<any>): SerializedObject {
+        this.result = new SerializedObject();
 
+        this.result.destruct(property.getStrategy());
+
+        property.accept(this);
+
+        return this.result;
     }
 
-    visitObjectData(property: DynamicProperty<object>, strategy: PropertyStrategy<object>): void {
-
+    visitString(property: DynamicProperty<string>): void {
+        this.result.data = property.get();
     }
 
-    visitObjectReference(property: DynamicProperty<object>, strategy: PropertyStrategy<object>): void {
-
+    visitNumber(property: DynamicProperty<number>): void {
+        this.result.data = property.get();
     }
 
+    visitBoolean(property: DynamicProperty<boolean>): void {
+        this.result.data = property.get();
+    }
+
+    visitObjectData(property: DynamicProperty<object>): void {
+        const object = property.get();
+        if (object) {
+            const serializedObject = new SerializedObject();
+
+            serializedObject.destruct(object);
+
+            PropertyUtils.forEachPropertyIn(object, (property, key) => {
+                serializedObject.data[key] = new PropertySerializer(this.keepExternal, this.lookup).serialize(property);
+            });
+
+            this.result.data = serializedObject;
+        }
+    }
+
+    visitObjectReference(property: DynamicProperty<object>): void {
+        const object = property.get();
+
+        if (object) {
+            const referenceID = this.lookup.get(object);
+
+            if (referenceID) {
+                this.result.data = referenceID;
+            } else if (this.keepExternal) {
+                this.result.data = object;
+            }
+        }
+    }
+
+    visitArray<T>(property: DynamicProperty<DynamicProperty<T>[]>): void {
+        const array = property.get();
+
+        if (array) {
+            const serializedArray: SerializedObject[] = [];
+
+            array.forEach(subProperty => {
+                serializedArray.push(new PropertySerializer(this.keepExternal, this.lookup).serialize(subProperty));
+            })
+
+            this.result.data = serializedArray;
+        }
+    }
 
 }
