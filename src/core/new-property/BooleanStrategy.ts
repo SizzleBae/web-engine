@@ -6,11 +6,16 @@ import { DynamicProperty } from "./DynamicProperty";
 
 @Serializable('core.property.BooleanStrategy')
 export class BooleanStrategy implements PropertyStrategy<boolean> {
-    copy(target: DynamicProperty<boolean>): void {
 
+    copy(property: DynamicProperty<boolean>, source: DynamicProperty<boolean>): void {
+        property.set(source.get());
     }
 
-    accept(visitor: PropertyVisitor, property: DynamicProperty<boolean>): void {
+    clone(property: DynamicProperty<boolean>): DynamicProperty<boolean> {
+        return new DynamicProperty(new BooleanStrategy(), property.get());
+    }
+
+    accept(property: DynamicProperty<boolean>, visitor: PropertyVisitor): void {
         visitor.visitBoolean(property);
     }
 }

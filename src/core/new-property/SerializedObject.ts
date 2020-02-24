@@ -3,7 +3,7 @@ import { SerializableConstructorMap } from "../property/SerializableConstructorM
 
 export class SerializedObject {
     public constructorID: string = "";
-    public data: any;
+    public data: any = {};
 
     destruct(object: object): void {
         this.constructorID = Reflect.get(object.constructor, META_SERIALIZABLE_ID_KEY);

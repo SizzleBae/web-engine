@@ -42,54 +42,42 @@ export class PropertyDeserializer implements PropertyVisitor {
             const deserializedObject = serializedObject.construct();
 
             PropertyUtils.forEachPropertyIn(deserializedObject, (property, key) => {
-                new PropertyDeserializer(this.lookup).deserialize(serializedObject.data[key]);
-                property.deserialize(serializedObject.data[key], lookup);
+                property.copy(new PropertyDeserializer(this.lookup).deserialize(serializedObject.data[key]));
             });
 
-            return deserializedObject;
+            property.set(deserializedObject);
+        } else {
+            property.set(undefined);
         }
-
-        return undefined;
-        // const object = property.get();
-        // if (object) {
-        //     const serializedObject = new SerializedObject();
-
-        //     serializedObject.destruct(object);
-
-        //     PropertyUtils.forEachPropertyIn(object, (property, key) => {
-        //         serializedObject.data[key] = new PropertySerializer(this.keepExternal, this.lookup).serialize(property);
-        //     });
-
-        //     this.serializedProperty.data = serializedObject;
-        // }
     }
 
     visitObjectReference(property: DynamicProperty<object>): void {
-        const object = property.get();
-
-        if (object) {
-            const referenceID = this.lookup.get(object);
-
-            if (referenceID) {
-                this.serializedProperty.data = referenceID;
-            } else if (this.keepExternal) {
-                this.serializedProperty.data = object;
+        if (this.serializedProperty.data.id) {
+            const object = this.lookup.get(this.serializedProperty.data.id);
+            if (!object) {
+                throw new Error(`Failed to deserialize object reference property - ${property}, id was found, but no object is mapped to that id in lookup table!`)
             }
+
+            property.set(object);
+        } else if (this.serializedProperty.data.object) {
+            property.set(this.serializedProperty.data.object);
+        } else {
+            property.set(undefined);
         }
     }
 
     visitArray<T>(property: DynamicProperty<DynamicProperty<T>[]>): void {
-        const array = property.get();
 
-        if (array) {
-            const serializedArray: SerializedObject[] = [];
+        const serializedArray = this.serializedProperty.data as SerializedObject[];
 
-            array.forEach(subProperty => {
-                serializedArray.push(new PropertySerializer(this.keepExternal, this.lookup).serialize(subProperty));
-            })
+        if (serializedArray) {
+            const deserializedArray = serializedArray.map(serializedProperty => new PropertyDeserializer(this.lookup).deserialize(serializedProperty));
 
-            this.serializedProperty.data = serializedArray;
+            property.set(deserializedArray);
+        } else {
+            property.set(undefined);
         }
+
     }
 
 }

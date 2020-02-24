@@ -6,7 +6,16 @@ import { DynamicProperty } from "./DynamicProperty";
 
 @Serializable('core.property.NumberStrategy')
 export class NumberStrategy implements PropertyStrategy<number> {
-    accept(visitor: PropertyVisitor, property: DynamicProperty<number>): void {
+
+    copy(property: DynamicProperty<number>, source: DynamicProperty<number>): void {
+        property.set(source.get());
+    }
+
+    clone(property: DynamicProperty<number>): DynamicProperty<number> {
+        return new DynamicProperty(new NumberStrategy(), property.get());
+    }
+
+    accept(property: DynamicProperty<number>, visitor: PropertyVisitor): void {
         visitor.visitNumber(property);
     }
 }

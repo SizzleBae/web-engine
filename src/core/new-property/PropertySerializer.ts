@@ -56,9 +56,9 @@ export class PropertySerializer implements PropertyVisitor {
             const referenceID = this.lookup.get(object);
 
             if (referenceID) {
-                this.result.data = referenceID;
+                this.result.data.id = referenceID;
             } else if (this.keepExternal) {
-                this.result.data = object;
+                this.result.data.object = object;
             }
         }
     }
@@ -67,11 +67,7 @@ export class PropertySerializer implements PropertyVisitor {
         const array = property.get();
 
         if (array) {
-            const serializedArray: SerializedObject[] = [];
-
-            array.forEach(subProperty => {
-                serializedArray.push(new PropertySerializer(this.keepExternal, this.lookup).serialize(subProperty));
-            })
+            const serializedArray = array.map(subProperty => new PropertySerializer(this.keepExternal, this.lookup).serialize(subProperty));
 
             this.result.data = serializedArray;
         }

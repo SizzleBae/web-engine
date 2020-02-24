@@ -6,14 +6,22 @@ import { PropertyVisitor } from "./PropertyVisitor";
 
 @Serializable('core.property.ArrayStrategy')
 export class ArrayStrategy<T> implements PropertyStrategy<DynamicProperty<T>[]> {
-    copy(property: DynamicProperty<DynamicProperty<T>[]>, target: DynamicProperty<DynamicProperty<T>[]>): void {
 
+    clone(property: DynamicProperty<DynamicProperty<T>[]>): DynamicProperty<DynamicProperty<T>[]> {
+        return new DynamicProperty(new ArrayStrategy<T>(), undefined).copy(property);
+    }
+
+    copy(property: DynamicProperty<DynamicProperty<T>[]>, source: DynamicProperty<DynamicProperty<T>[]>): void {
+        const sourceArray = source.get();
+        if (sourceArray) {
+            const clonedArray = sourceArray.map(sourceProperty => sourceProperty.clone());
+            property.set(clonedArray);
+        }
     }
 
     accept(property: DynamicProperty<DynamicProperty<T>[]>, visitor: PropertyVisitor): void {
         visitor.visitArray(property);
     }
-
 
     // serialize(value: DynamicProperty<T>[] | undefined, lookup: Map<object, string>): SerializedObject {
     //     const serializedProperty = new SerializedObject();

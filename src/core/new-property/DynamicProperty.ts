@@ -1,12 +1,5 @@
 import { PropertyStrategy } from "./PropertyStrategy";
-import { SerializedObject } from "./SerializedObject";
 import { PropertyVisitor } from "./PropertyVisitor";
-import { StringStrategy } from "./StringStrategy";
-import { NumberStrategy } from "./NumberStrategy";
-import { BooleanStrategy } from "./BooleanStrategy";
-import { ObjectDataStrategy } from "./ObjectDataStrategy";
-import { UndefinedStrategy } from "./UndefinedStrategy";
-import { ObjectReferenceStrategy } from "./ObjectReferenceStrategy";
 
 export class DynamicProperty<T> {
     constructor(
@@ -21,6 +14,24 @@ export class DynamicProperty<T> {
     set(value: T | undefined) {
         this.value = value;
     }
+
+    copy(target: DynamicProperty<T>): this {
+        this.strategy.copy(this, target);
+        return this;
+    }
+
+    clone(): DynamicProperty<T> {
+        return this.strategy.clone(this);
+    }
+
+    getStrategy(): PropertyStrategy<T> {
+        return this.strategy;
+    }
+
+    accept(visitor: PropertyVisitor) {
+        this.strategy.accept(this, visitor);
+    }
+
 
     // findStrategy(): PropertyStrategy<any> {
     //     switch (typeof this.value) {
@@ -57,18 +68,4 @@ export class DynamicProperty<T> {
 
     //     this.value = this.propertyStrategy.deserialize(data, lookup);
     // }
-
-    copy(target: DynamicProperty<T>): this {
-        this.strategy.copy(target);
-        return this;
-    }
-
-    getStrategy(): PropertyStrategy<T> {
-        return this.strategy;
-    }
-
-    accept(visitor: PropertyVisitor) {
-        this.strategy.accept(visitor, this);
-    }
-
 }
