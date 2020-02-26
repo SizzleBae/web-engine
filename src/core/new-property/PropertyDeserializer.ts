@@ -1,5 +1,5 @@
 import { PropertyVisitor } from "./PropertyVisitor";
-import { DynamicProperty } from "./DynamicProperty";
+import { Property } from "./Property";
 import { PropertyStrategy } from "./PropertyStrategy";
 import { SerializedObject } from "./SerializedObject";
 import { PropertyUtils } from "../property/PropertyUtils";
@@ -12,30 +12,30 @@ export class PropertyDeserializer implements PropertyVisitor {
         private lookup: Map<string, object> = new Map<string, object>()) {
     }
 
-    deserialize(data: SerializedObject): DynamicProperty<any> {
+    deserialize(data: SerializedObject): Property<any> {
         this.serializedProperty = data;
 
         const strategy = data.construct() as PropertyStrategy<any>;
-        const property = new DynamicProperty(strategy);
+        const property = new Property(strategy);
 
         property.accept(this);
 
         return property;
     }
 
-    visitString(property: DynamicProperty<string>): void {
+    visitString(property: Property<string>): void {
         property.set(this.serializedProperty.data);
     }
 
-    visitNumber(property: DynamicProperty<number>): void {
+    visitNumber(property: Property<number>): void {
         property.set(this.serializedProperty.data);
     }
 
-    visitBoolean(property: DynamicProperty<boolean>): void {
+    visitBoolean(property: Property<boolean>): void {
         property.set(this.serializedProperty.data);
     }
 
-    visitObjectData(property: DynamicProperty<object>): void {
+    visitObjectData(property: Property<object>): void {
         const serializedObject = this.serializedProperty.data as SerializedObject;
 
         if (serializedObject) {
@@ -51,7 +51,7 @@ export class PropertyDeserializer implements PropertyVisitor {
         }
     }
 
-    visitObjectReference(property: DynamicProperty<object>): void {
+    visitObjectReference(property: Property<object>): void {
         if (this.serializedProperty.data.id) {
             const object = this.lookup.get(this.serializedProperty.data.id);
             if (!object) {
@@ -66,7 +66,7 @@ export class PropertyDeserializer implements PropertyVisitor {
         }
     }
 
-    visitArray<T>(property: DynamicProperty<DynamicProperty<T>[]>): void {
+    visitArray<T>(property: Property<Property<T>[]>): void {
 
         const serializedArray = this.serializedProperty.data as SerializedObject[];
 

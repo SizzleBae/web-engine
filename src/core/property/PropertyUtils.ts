@@ -1,15 +1,15 @@
-import { DynamicProperty } from "../new-property/DynamicProperty";
+import { Property } from "../new-property/Property";
 
 export class PropertyUtils {
-    static forEachPropertyIn(propertyOwner: object, action: (property: DynamicProperty<any>, key: string) => void): void {
+    static forEachPropertyIn(propertyOwner: object, action: (property: Property<any>, key: string) => void): void {
         for (const [key, value] of Object.entries(propertyOwner)) {
-            if (value instanceof DynamicProperty) {
+            if (value instanceof Property) {
                 action(value, key);
             }
         }
     }
 
-    static getPropertyIn(object: object, key: string): DynamicProperty<any> | undefined {
+    static getPropertyIn(object: object, key: string): Property<any> | undefined {
         return (object as any)[key];
     }
 }

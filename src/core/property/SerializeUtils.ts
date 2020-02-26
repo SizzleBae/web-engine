@@ -1,9 +1,10 @@
 import { META_SERIALIZABLE_ID_KEY } from "./Serializable";
 import { SerializableConstructorMap } from "./SerializableConstructorMap";
 import { PropertyUtils } from "./PropertyUtils";
-import { PropertySerializer } from "./PropertySerializer";
-import { PropertyDeserializer } from "./PropertyDeserializer";
 import uuidv1 from 'uuid/v1'
+import { PropertySerializer } from "../new-property/PropertySerializer";
+import { PropertyDeserializer } from "../new-property/PropertyDeserializer";
+import { SerializedObject } from "../new-property/SerializedObject";
 
 export class SerializeUtils {
 
@@ -38,7 +39,7 @@ export class SerializeUtils {
         return SerializeUtils.derializeObjects(SerializeUtils.serializeObjects(targets, true));
     }
 
-    static serializeObjects(targets: object[], keepExternal: boolean = false): any {
+    static serializeObjects(targets: object[], keepExternal: boolean = false): Map<string, SerializedObject> {
         // Create lookup for given objects using uuid
         const lookup = new Map<object, string>();
         targets.forEach(object => {
@@ -47,51 +48,48 @@ export class SerializeUtils {
         const serializer = new PropertySerializer(keepExternal, lookup);
 
         // Serialize each object into a json and insert that with its id in the final json
-        const outJSON = {} as any;
+        const result = new Map<string, SerializedObject>();
+
         targets.forEach(object => {
-            const objectJSON = {} as any;
-            const constructorID = Reflect.get(object.constructor, META_SERIALIZABLE_ID_KEY);
-            if (constructorID !== undefined) {
-                objectJSON['constructorID'] = constructorID;
+            const serializedObject = new SerializedObject();
 
-                PropertyUtils.forEachPropertyIn(object, (property, key) => {
-                    objectJSON[key] = serializer.serialize(property);
-                });
+            serializedObject.destruct(object);
 
-                outJSON[lookup.get(object) as string] = objectJSON;
-            }
+            PropertyUtils.forEachPropertyIn(object, (property, key) => {
+                serializedObject.data[key] = serializer.serialize(property);
+            });
+
+            result.set(lookup.get(object) as string, serializedObject);
+
         });
 
-        return outJSON;
+        return result;
     }
 
-    static derializeObjects(inJSON: any): object[] {
+    static derializeObjects(data: Map<string, SerializedObject>): object[] {
         // Prepare lookup of deserializing objects, calling the default constructor of the serialized objects
         const lookup = new Map<string, object>();
-        for (const [objectID, objectJSON] of Object.entries(inJSON) as [string, any][]) {
+        for (const [objectID, serializedObject] of data.entries()) {
 
-            // Find constructor that matches serialized object
-            const Constructor = SerializableConstructorMap.instance().getOwnerConstructor(objectJSON['constructorID']);
-            if (Constructor === undefined) {
-                throw new Error(`Failed to deserialize object property. Missing constructor id for - ${objectJSON}`)
-            }
-            const object = new Constructor();
+            const object = serializedObject.construct();
 
             lookup.set(objectID, object);
+
         }
 
         const result: object[] = [];
         const deserializer = new PropertyDeserializer(lookup);
         for (const [objectID, object] of lookup) {
-            const objectJSON = inJSON[objectID];
+            const serializedObject = data.get(objectID) as SerializedObject;
 
             PropertyUtils.forEachPropertyIn(object, (property, key) => {
-                const propertyJSON = objectJSON[key];
-                if (propertyJSON === undefined) {
-                    console.warn(`Failed to deserialize property - ${property}. Missing property data in json.`);
+                const serializedProperty = serializedObject.data[key] as SerializedObject;
+
+                if (serializedProperty === undefined) {
+                    console.warn(`Failed to deserialize property ${property} in object ${object}. Missing property data in json.`);
                 }
 
-                property.copyFrom(deserializer.deserialize(propertyJSON));
+                property.copy(deserializer.deserialize(serializedProperty));
 
             });
 
@@ -99,6 +97,14 @@ export class SerializeUtils {
         }
 
         return result;
+    }
+
+    static stringify(map: Map<string, SerializedObject>): string {
+        return JSON.stringify([...map]);
+    }
+
+    static parse(string: string): Map<string, SerializedObject> {
+        return new Map(JSON.parse(string));
     }
 
     // static derializeObjects(inJSONString: string): object[] {

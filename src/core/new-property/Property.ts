@@ -1,7 +1,7 @@
 import { PropertyStrategy } from "./PropertyStrategy";
 import { PropertyVisitor } from "./PropertyVisitor";
 
-export class DynamicProperty<T> {
+export class Property<T> {
     constructor(
         private strategy: PropertyStrategy<T>,
         private value?: T) {
@@ -15,12 +15,12 @@ export class DynamicProperty<T> {
         this.value = value;
     }
 
-    copy(target: DynamicProperty<T>): this {
+    copy(target: Property<T>): this {
         this.strategy.copy(this, target);
         return this;
     }
 
-    clone(): DynamicProperty<T> {
+    clone(): Property<T> {
         return this.strategy.clone(this);
     }
 

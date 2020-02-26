@@ -1,5 +1,5 @@
 import { PropertyVisitor } from "./PropertyVisitor";
-import { DynamicProperty } from "./DynamicProperty";
+import { Property } from "./Property";
 import { SerializedObject } from "./SerializedObject";
 import { PropertyUtils } from "../property/PropertyUtils";
 
@@ -12,7 +12,7 @@ export class PropertySerializer implements PropertyVisitor {
         private lookup: Map<object, string> = new Map<object, string>()) {
     }
 
-    serialize(property: DynamicProperty<any>): SerializedObject {
+    serialize(property: Property<any>): SerializedObject {
         this.result = new SerializedObject();
 
         this.result.destruct(property.getStrategy());
@@ -22,19 +22,19 @@ export class PropertySerializer implements PropertyVisitor {
         return this.result;
     }
 
-    visitString(property: DynamicProperty<string>): void {
+    visitString(property: Property<string>): void {
         this.result.data = property.get();
     }
 
-    visitNumber(property: DynamicProperty<number>): void {
+    visitNumber(property: Property<number>): void {
         this.result.data = property.get();
     }
 
-    visitBoolean(property: DynamicProperty<boolean>): void {
+    visitBoolean(property: Property<boolean>): void {
         this.result.data = property.get();
     }
 
-    visitObjectData(property: DynamicProperty<object>): void {
+    visitObjectData(property: Property<object>): void {
         const object = property.get();
         if (object) {
             const serializedObject = new SerializedObject();
@@ -49,7 +49,7 @@ export class PropertySerializer implements PropertyVisitor {
         }
     }
 
-    visitObjectReference(property: DynamicProperty<object>): void {
+    visitObjectReference(property: Property<object>): void {
         const object = property.get();
 
         if (object) {
@@ -63,7 +63,7 @@ export class PropertySerializer implements PropertyVisitor {
         }
     }
 
-    visitArray<T>(property: DynamicProperty<DynamicProperty<T>[]>): void {
+    visitArray<T>(property: Property<Property<T>[]>): void {
         const array = property.get();
 
         if (array) {

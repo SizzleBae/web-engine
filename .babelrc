@@ -1,15 +1,17 @@
 {
     "presets": [
         [
-            "@babel/env",
+            "@babel/preset-env",
             {
                 "debug": true,
-                "useBuiltIns": "usage",
                 "corejs": 3,
-                "loose": true
+                "loose": true,
+                "targets": {
+                    "node": "current"
+                }
             }
         ],
-        "@babel/typescript"
+        "@babel/preset-typescript"
     ],
     "plugins": [
         [
@@ -24,6 +26,7 @@
                 "loose": true
             }
         ],
-        "@babel/plugin-proposal-optional-chaining"
+        "@babel/plugin-proposal-optional-chaining",
+        "@babel/plugin-proposal-object-rest-spread"
     ]
 }

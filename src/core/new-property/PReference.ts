@@ -2,20 +2,20 @@ import { PropertyStrategy } from "./PropertyStrategy";
 import { SerializedObject } from "./SerializedObject";
 import { Serializable } from "../property/Serializable";
 import { PropertyVisitor } from "./PropertyVisitor";
-import { DynamicProperty } from "./DynamicProperty";
+import { Property } from "./Property";
 
 @Serializable('core.property.ObjectReferenceStrategy')
-export class ObjectReferenceStrategy<T extends object> implements PropertyStrategy<T> {
+export class PReference<T extends object> implements PropertyStrategy<T> {
 
-    copy(property: DynamicProperty<T>, source: DynamicProperty<T>): void {
+    copy(property: Property<T>, source: Property<T>): void {
         property.set(source.get());
     }
 
-    clone(property: DynamicProperty<T>): DynamicProperty<T> {
-        return new DynamicProperty<T>(new ObjectReferenceStrategy<T>(), property.get());
+    clone(property: Property<T>): Property<T> {
+        return new Property<T>(new PReference<T>(), property.get());
     }
 
-    accept(property: DynamicProperty<T>, visitor: PropertyVisitor): void {
+    accept(property: Property<T>, visitor: PropertyVisitor): void {
         visitor.visitObjectReference(property);
     }
 

@@ -3,22 +3,22 @@ import { Serializable } from "../property/Serializable";
 import { SerializedObject } from "./SerializedObject";
 import { PropertyUtils } from "../property/PropertyUtils";
 import { PropertyVisitor } from "./PropertyVisitor";
-import { DynamicProperty } from "./DynamicProperty";
+import { Property } from "./Property";
 
 @Serializable('core.property.ObjectDataStrategy')
-export class ObjectDataStrategy<T extends object> implements PropertyStrategy<T> {
+export class PData<T extends object> implements PropertyStrategy<T> {
 
-    copy(property: DynamicProperty<T>, source: DynamicProperty<T>): void {
+    copy(property: Property<T>, source: Property<T>): void {
         //TODO: Clone??
         property.set(source.get());
     }
 
-    clone(property: DynamicProperty<T>): DynamicProperty<T> {
+    clone(property: Property<T>): Property<T> {
         //TODO: Clone??
-        return new DynamicProperty<T>(new ObjectDataStrategy<T>(), property.get());
+        return new Property<T>(new PData<T>(), property.get());
     }
 
-    accept(property: DynamicProperty<T>, visitor: PropertyVisitor): void {
+    accept(property: Property<T>, visitor: PropertyVisitor): void {
         visitor.visitObjectData(property);
     }
 
@@ -56,3 +56,5 @@ export class ObjectDataStrategy<T extends object> implements PropertyStrategy<T>
     //     return undefined;
     // }
 }
+
+export type Data<T extends object> = PData<T>;
