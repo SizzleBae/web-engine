@@ -4,7 +4,8 @@ import { PropertyUtils } from "./PropertyUtils";
 import uuidv1 from 'uuid/v1'
 import { PropertySerializer } from "../new-property/PropertySerializer";
 import { PropertyDeserializer } from "../new-property/PropertyDeserializer";
-import { SerializedObject } from "../new-property/SerializedObject";
+import { SerializedObject, SerializedObjects } from "../new-property/SerializedObject";
+import { Property } from "../new-property/Property";
 
 export class SerializeUtils {
 
@@ -35,31 +36,44 @@ export class SerializeUtils {
     //     return JSON.stringify(outJSON);
     // }
 
-    static cloneObjects(targets: object[]): object[] {
-        return SerializeUtils.derializeObjects(SerializeUtils.serializeObjects(targets, true));
-    }
+    // static cloneObjects(targets: object[]): object[] {
+    //     return SerializeUtils.derializeObjects(SerializeUtils.serializeObjects(targets, true));
+    // }
 
-    static serializeObjects(targets: object[], keepExternal: boolean = false): Map<string, SerializedObject> {
+    static serializeObjects(targets: object[], keepExternal: boolean = false): SerializedObjects {
         // Create lookup for given objects using uuid
         const lookup = new Map<object, string>();
+        const properties = new Set<Property<any>>();
+        const objects = new Set<object>();
         targets.forEach(object => {
             lookup.set(object, uuidv1());
+            objects.add(object);
+
+            PropertyUtils.forEachPropertyIn(object, (property, key) => {
+                lookup.set(property, uuidv1());
+                properties.add(property);
+            });
         });
+
+        const result = new SerializedObjects();
+
+        // Serialize each property and add them to result
         const serializer = new PropertySerializer(keepExternal, lookup);
+        properties.forEach(property => {
+            result.properties[lookup.get(property) as string] = serializer.serialize(property);
+        })
 
-        // Serialize each object into a json and insert that with its id in the final json
-        const result = new Map<string, SerializedObject>();
-
+        // Serialize each object and add them to result
         targets.forEach(object => {
             const serializedObject = new SerializedObject();
 
             serializedObject.destruct(object);
 
             PropertyUtils.forEachPropertyIn(object, (property, key) => {
-                serializedObject.data[key] = serializer.serialize(property);
+                serializedObject.data[key] = lookup.get(property);
             });
 
-            result.set(lookup.get(object) as string, serializedObject);
+            result.objects[lookup.get(object) as string] = serializedObject;
 
         });
 
@@ -99,13 +113,13 @@ export class SerializeUtils {
         return result;
     }
 
-    static stringify(map: Map<string, SerializedObject>): string {
-        return JSON.stringify([...map]);
-    }
+    // static stringify(map: Map<string, SerializedObject>): string {
+    //     return JSON.stringify([...map]);
+    // }
 
-    static parse(string: string): Map<string, SerializedObject> {
-        return new Map(JSON.parse(string));
-    }
+    // static parse(string: string): Map<string, SerializedObject> {
+    //     return new Map(JSON.parse(string));
+    // }
 
     // static derializeObjects(inJSONString: string): object[] {
     //     const inJSON = JSON.parse(inJSONString);

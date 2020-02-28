@@ -21,3 +21,8 @@ export class SerializedObject {
         return new Constructor();
     }
 }
+
+export class SerializedObjects {
+    public properties: any = {};
+    public objects: any = {};
+}

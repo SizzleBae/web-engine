@@ -15,7 +15,7 @@ export class PropertySerializer implements PropertyVisitor {
     serialize(property: Property<any>): SerializedObject {
         this.result = new SerializedObject();
 
-        this.result.destruct(property.getStrategy());
+        this.result.destruct(property.strategy);
 
         property.accept(this);
 

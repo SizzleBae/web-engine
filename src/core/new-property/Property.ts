@@ -2,9 +2,9 @@ import { PropertyStrategy } from "./PropertyStrategy";
 import { PropertyVisitor } from "./PropertyVisitor";
 
 export class Property<T> {
-    constructor(
-        private strategy: PropertyStrategy<T>,
-        private value?: T) {
+
+    constructor(public strategy: PropertyStrategy<T>, private value?: T) {
+
     }
 
     get(): T | undefined {
@@ -20,18 +20,13 @@ export class Property<T> {
         return this;
     }
 
-    clone(): Property<T> {
+    clone(): Property<T> | undefined {
         return this.strategy.clone(this);
-    }
-
-    getStrategy(): PropertyStrategy<T> {
-        return this.strategy;
     }
 
     accept(visitor: PropertyVisitor) {
         this.strategy.accept(this, visitor);
     }
-
 
     // findStrategy(): PropertyStrategy<any> {
     //     switch (typeof this.value) {
