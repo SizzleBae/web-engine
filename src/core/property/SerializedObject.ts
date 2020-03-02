@@ -1,5 +1,5 @@
-import { META_SERIALIZABLE_ID_KEY } from "../property/Serializable";
-import { SerializableConstructorMap } from "../property/SerializableConstructorMap";
+import { META_SERIALIZABLE_ID_KEY } from "./Serializable";
+import { SerializableConstructorMap } from "./SerializableConstructorMap";
 
 export class SerializedObject {
     public constructorID: string = "";

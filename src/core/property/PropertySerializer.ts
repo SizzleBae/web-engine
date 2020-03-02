@@ -1,67 +1,76 @@
 import { PropertyVisitor } from "./PropertyVisitor";
-import { primitive, PrimitiveProperty } from "./PrimitiveProperty";
-import { ObjectProperty } from "./ObjectProperty";
-import { ArrayProperty } from "./ArrayProperty";
-import { DynamicProperty } from "./Property";
-import { META_SERIALIZABLE_ID_KEY } from "./Serializable";
-
-export class SerializedProperty {
-    constructor(public constructorID: string, public data: any) { }
-}
+import { Property } from "./Property";
+import { SerializedObject } from "./SerializedObject";
+import { PropertyUtils } from "./PropertyUtils";
 
 export class PropertySerializer implements PropertyVisitor {
 
-    private result: SerializedProperty = new SerializedProperty("MISSING CONSTRUCTOR", undefined);
+    private serializedProperty: SerializedObject = new SerializedObject();
 
     constructor(
         private keepExternal: boolean = true,
-        private lookup?: Map<object, string>) {
+        private lookup: Map<object, string> = new Map<object, string>()) {
     }
 
-    serialize(property: DynamicProperty<any>): SerializedProperty {
-        this.result = new SerializedProperty("MISSING CONSTRUCTOR", undefined);
+    serialize(property: Property<any>): SerializedObject {
+        this.serializedProperty = new SerializedObject();
 
-        const constructorID = Reflect.get(property.constructor, META_SERIALIZABLE_ID_KEY);
-        if (constructorID === undefined) {
-            throw new Error(`Failed to serialize property. DynamicProperty is missing a serializable constructor, dynamic properties need to be decorated with Serializable.`);
-        }
-        this.result.constructorID = constructorID;
+        this.serializedProperty.destruct(property);
 
         property.accept(this);
 
-        return this.result;
+        return this.serializedProperty;
     }
 
-    visitPrimitive<T extends primitive>(property: PrimitiveProperty<T>): void {
-        this.result.data = property.get();
+    visitString(property: Property<string>): void {
+        this.serializedProperty.data = property.get();
     }
 
-    visitObject<T extends object>(property: ObjectProperty<T>): void {
+    visitNumber(property: Property<number>): void {
+        this.serializedProperty.data = property.get();
+    }
+
+    visitBoolean(property: Property<boolean>): void {
+        this.serializedProperty.data = property.get();
+    }
+
+    visitData<T extends object>(property: Property<T>): void {
+        const object = property.get();
+        if (object) {
+            const serializedObject = new SerializedObject();
+
+            serializedObject.destruct(object);
+
+            PropertyUtils.forEachPropertyIn(object, (property, key) => {
+                serializedObject.data[key] = new PropertySerializer(this.keepExternal, this.lookup).serialize(property);
+            });
+
+            this.serializedProperty.data = serializedObject;
+        }
+    }
+
+    visitReference<T extends object>(property: Property<T>): void {
         const object = property.get();
 
-        if (object === undefined) {
-            this.result.data = undefined;
-            return;
-        }
+        if (object) {
+            const referenceID = this.lookup.get(object);
 
-        if (this.lookup && this.lookup.has(object)) {
-            this.result.data = this.lookup.get(object);
-        } else if (this.keepExternal) {
-            this.result.data = object;
+            if (referenceID) {
+                this.serializedProperty.data.id = referenceID;
+            } else if (this.keepExternal) {
+                this.serializedProperty.data.object = object;
+            }
         }
     }
 
-    visitArray<T>(property: ArrayProperty<T>): void {
+    visitArray<T>(property: Property<Property<T>[]>): void {
         const array = property.get();
-        if (array === undefined) {
-            this.result.data = undefined;
-            return;
-        }
 
-        this.result.data = [];
-        array.forEach(property => {
-            this.result.data.push(new PropertySerializer(this.keepExternal, this.lookup).serialize(property));
-        });
+        if (array) {
+            const serializedArray = array.map(subProperty => new PropertySerializer(this.keepExternal, this.lookup).serialize(subProperty));
+
+            this.serializedProperty.data = serializedArray;
+        }
     }
 
 }

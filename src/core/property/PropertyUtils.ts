@@ -1,4 +1,4 @@
-import { Property } from "../new-property/Property";
+import { Property } from "./Property";
 
 export class PropertyUtils {
     static forEachPropertyIn(propertyOwner: object, action: (property: Property<any>, key: string) => void): void {

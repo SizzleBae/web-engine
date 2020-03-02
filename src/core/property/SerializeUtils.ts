@@ -2,10 +2,10 @@ import { META_SERIALIZABLE_ID_KEY } from "./Serializable";
 import { SerializableConstructorMap } from "./SerializableConstructorMap";
 import { PropertyUtils } from "./PropertyUtils";
 import uuidv1 from 'uuid/v1'
-import { PropertySerializer } from "../new-property/PropertySerializer";
-import { PropertyDeserializer } from "../new-property/PropertyDeserializer";
-import { SerializedObject, SerializedObjects } from "../new-property/SerializedObject";
-import { Property } from "../new-property/Property";
+import { PropertySerializer } from "./PropertySerializer";
+import { PropertyDeserializer } from "./PropertyDeserializer";
+import { SerializedObject, SerializedObjects } from "./SerializedObject";
+import { Property } from "./Property";
 
 export class SerializeUtils {
 
@@ -43,8 +43,10 @@ export class SerializeUtils {
     static serializeObjects(targets: object[], keepExternal: boolean = false): SerializedObjects {
         // Create lookup for given objects using uuid
         const lookup = new Map<object, string>();
+
         const properties = new Set<Property<any>>();
         const objects = new Set<object>();
+
         targets.forEach(object => {
             lookup.set(object, uuidv1());
             objects.add(object);
@@ -80,37 +82,42 @@ export class SerializeUtils {
         return result;
     }
 
-    static derializeObjects(data: Map<string, SerializedObject>): object[] {
-        // Prepare lookup of deserializing objects, calling the default constructor of the serialized objects
+    static derializeObjects(data: SerializedObjects): object[] {
+        // Create a lookup that will contain all properties and objects indexed by an id
         const lookup = new Map<string, object>();
-        for (const [objectID, serializedObject] of data.entries()) {
 
+        // Construct all serialized objects, map them to their data and add them to lookup
+        const objects = new Map<object, SerializedObject>();
+        for (const [objectID, serializedObject] of Object.entries(data.objects) as [string, SerializedObject][]) {
             const object = serializedObject.construct();
 
+            objects.set(object, serializedObject);
             lookup.set(objectID, object);
 
         }
 
-        const result: object[] = [];
-        const deserializer = new PropertyDeserializer(lookup);
-        for (const [objectID, object] of lookup) {
-            const serializedObject = data.get(objectID) as SerializedObject;
-
+        // Find properties in constructed objects, map them to their serialized counterpart and add them to lookup
+        const properties: Map<Property<any>, SerializedObject> = new Map();
+        objects.forEach((serializedObject, object) => {
             PropertyUtils.forEachPropertyIn(object, (property, key) => {
-                const serializedProperty = serializedObject.data[key] as SerializedObject;
+                const propertyID = serializedObject.data[key] as string;
 
-                if (serializedProperty === undefined) {
+                if (propertyID) {
+                    properties.set(property, data.properties[propertyID]);
+                    lookup.set(propertyID, property);
+                } else {
                     console.warn(`Failed to deserialize property ${property} in object ${object}. Missing property data in json.`);
                 }
-
-                property.copy(deserializer.deserialize(serializedProperty));
-
             });
+        })
 
-            result.push(object);
-        }
+        // Finally, go through each property and deserialize them
+        const deserializer = new PropertyDeserializer(lookup);
+        properties.forEach((serializedProperty, property) => {
+            deserializer.deserialize(property, serializedProperty);
+        });
 
-        return result;
+        return [...objects.keys()];
     }
 
     // static stringify(map: Map<string, SerializedObject>): string {

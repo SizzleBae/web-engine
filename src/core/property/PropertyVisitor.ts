@@ -1,9 +1,12 @@
-import { PrimitiveProperty, primitive } from "./PrimitiveProperty";
-import { ObjectProperty } from "./ObjectProperty";
-import { ArrayProperty } from "./ArrayProperty";
+import { Property } from "./Property";
 
 export interface PropertyVisitor {
-    visitPrimitive<T extends primitive>(property: PrimitiveProperty<T>): void;
-    visitObject<T extends object>(property: ObjectProperty<T>): void;
-    visitArray<T>(property: ArrayProperty<T>): void;
+
+    visitString(property: Property<string>): void;
+    visitNumber(property: Property<number>): void;
+    visitBoolean(property: Property<boolean>): void;
+    visitData<T extends object>(property: Property<T>): void;
+    visitReference<T extends object>(property: Property<T>): void;
+    visitArray<T>(property: Property<Property<T>[]>): void;
+
 }

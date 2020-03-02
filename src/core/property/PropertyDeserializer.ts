@@ -1,65 +1,82 @@
 import { PropertyVisitor } from "./PropertyVisitor";
-import { primitive, PrimitiveProperty } from "./PrimitiveProperty";
-import { ObjectProperty } from "./ObjectProperty";
-import { ArrayProperty } from "./ArrayProperty";
-import { PropertySerializer, SerializedProperty } from "./PropertySerializer";
-import { DynamicProperty } from "./Property";
-import { SerializableConstructorMap } from "./SerializableConstructorMap";
+import { Property } from "./Property";
+import { SerializedObject } from "./SerializedObject";
+import { PropertyUtils } from "./PropertyUtils";
 
 export class PropertyDeserializer implements PropertyVisitor {
 
-    private propertyData: SerializedProperty = new SerializedProperty("MISSING CONSTRUCTOR", undefined);
+    private serializedProperty: SerializedObject = new SerializedObject();
 
-    constructor(private lookup?: Map<string, object>) {
+    constructor(
+        private lookup: Map<string, object> = new Map<string, object>()) {
     }
 
-    deserialize(data: SerializedProperty): DynamicProperty<any> {
-        this.propertyData = data;
-
-        const Constructor = SerializableConstructorMap.instance().getOwnerConstructor(data.constructorID);
-        if (Constructor === undefined) {
-            throw new Error(`Failed to deserialize property. JSON is missing a valid constructor id.`);
-        }
-        const property = new Constructor() as DynamicProperty<any>;
+    deserialize(property: Property<any>, data: SerializedObject): Property<any> {
+        this.serializedProperty = data;
 
         property.accept(this);
 
         return property;
     }
 
-    visitPrimitive<T extends primitive>(property: PrimitiveProperty<T>): void {
-        property.set(this.propertyData.data);
+    visitString(property: Property<string>): void {
+        property.set(this.serializedProperty.data);
     }
 
-    visitObject<T extends object>(property: ObjectProperty<T>): void {
-        if (typeof this.propertyData.data === 'string') {
-            if (this.lookup) {
-                const object = this.lookup.get(this.propertyData.data) as T | undefined;
-                if (object) {
-                    property.set(object)
-                } else {
-                    throw new Error(`Failed to deserialize object property. Property data was an ID, but there is no object associated with that ID.`);
-                }
-            } else {
-                throw new Error(`Failed to deserialize object property. Property data was an ID, but there is no lookup.`);
-            }
+    visitNumber(property: Property<number>): void {
+        property.set(this.serializedProperty.data);
+    }
+
+    visitBoolean(property: Property<boolean>): void {
+        property.set(this.serializedProperty.data);
+    }
+
+    visitData<T extends object>(property: Property<T>): void {
+        const serializedObject = this.serializedProperty.data as SerializedObject;
+
+        if (serializedObject) {
+            const deserializedObject = serializedObject.construct() as T;
+
+            PropertyUtils.forEachPropertyIn(deserializedObject, (property, key) => {
+                new PropertyDeserializer(this.lookup).deserialize(property, serializedObject.data[key]);
+            });
+
+            property.set(deserializedObject);
         } else {
-            property.set(this.propertyData.data);
+            property.set(undefined);
         }
     }
 
-    visitArray<T>(property: ArrayProperty<T>): void {
-        const arrayData: SerializedProperty[] = this.propertyData.data;
-        if (arrayData === undefined) {
-            return;
+    visitReference<T extends object>(property: Property<T>): void {
+        if (this.serializedProperty.data.id) {
+            const object = this.lookup.get(this.serializedProperty.data.id) as T | undefined;
+            if (!object) {
+                throw new Error(`Failed to deserialize object reference property - ${property}, id was found, but no object is mapped to that id in lookup table!`)
+            }
+
+            property.set(object);
+        } else if (this.serializedProperty.data.object) {
+            property.set(this.serializedProperty.data.object);
+        } else {
+            property.set(undefined);
+        }
+    }
+
+    visitArray<T>(property: Property<Property<T>[]>): void {
+        const serializedArray = this.serializedProperty.data as SerializedObject[];
+
+        if (serializedArray) {
+            const deserializedArray = serializedArray.map(serializedProperty => {
+                const deserializedProperty = serializedProperty.construct() as Property<any>;
+
+                return new PropertyDeserializer(this.lookup).deserialize(deserializedProperty, serializedProperty);
+            });
+
+            property.set(deserializedArray);
+        } else {
+            property.set(undefined);
         }
 
-        const array: DynamicProperty<T>[] = [];
-
-        arrayData.forEach(serializedProperty => {
-            array.push(new PropertyDeserializer(this.lookup).deserialize(serializedProperty));
-        })
-
-        property.set(array);
     }
+
 }
