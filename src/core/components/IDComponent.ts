@@ -1,9 +1,8 @@
 import { LeafComponent } from "./LeafComponent";
 import { Serializable } from "../property/Serializable";
-import { PrimitiveProperty } from "../property/PrimitiveProperty";
-import { ObjectProperty } from "../property/ObjectProperty";
 import { TransformComponent } from "./TransformComponent";
 import uuidv1 from 'uuid/v1'
+import { PString } from "../property/PString";
 
 /**
  * An immutable component that stores a string ID.
@@ -12,15 +11,15 @@ import uuidv1 from 'uuid/v1'
 @Serializable('core.components.IDComponent')
 export class IDComponent extends LeafComponent {
 
-	public readonly id: PrimitiveProperty<string>;
+	public readonly id: PString;
 
 	constructor(id?: string) {
 		super();
 
 		if (id) {
-			this.id = new PrimitiveProperty(id, true);
+			this.id = new PString(id);
 		} else {
-			this.id = new PrimitiveProperty(uuidv1(), true);
+			this.id = new PString(uuidv1());
 		}
 
 	}
