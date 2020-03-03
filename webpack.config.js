@@ -2,11 +2,14 @@ const path = require('path');
 const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
 
 module.exports = {
-  entry: path.resolve(__dirname, 'src'),
+  entry: {
+    editor: './src/views/editor/editor.ts',
+    viewer: './src/views/viewer/viewer.ts',
+  },
 
   output: {
-    filename: 'bundle.js',
-    path: path.resolve(__dirname, 'dist'),
+    filename: '[name].js',
+    path: __dirname + '/server/views/'
   },
 
   resolve: {

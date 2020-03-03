@@ -1,5 +1,4 @@
 import { Component } from "./Component";
-import { ObjectProperty } from "../property/ObjectProperty";
 
 export abstract class LeafComponent extends Component {
   public [Symbol.iterator](): Iterator<Component> {
