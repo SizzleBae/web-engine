@@ -4,13 +4,15 @@ export class Editor {
         const canvas = document.getElementById("renderCanvas") as HTMLCanvasElement;
 
         // Initialize the GL context
-        const gl = canvas.getContext("webgl");
+        const gl = canvas.getContext("webgl2");
 
         // Only continue if WebGL is available and working
         if (gl === null) {
             alert("Unable to initialize WebGL. Your browser or machine may not support it.");
             return;
         }
+
+
 
         // Set clear color to black, fully opaque
         gl.clearColor(0.0, 0.0, 1.0, 1.0);
