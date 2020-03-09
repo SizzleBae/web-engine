@@ -2,6 +2,7 @@
 import { Property } from "./Property";
 import { PropertyVisitor } from "./PropertyVisitor";
 import { Serializable } from "./Serializable";
+import { PropertyMemento } from "./PropertyMemento";
 
 @Serializable('core.property.PArray')
 export class PArray<T> extends Property<Property<T>[]> {
@@ -22,4 +23,8 @@ export class PArray<T> extends Property<Property<T>[]> {
     accept(visitor: PropertyVisitor): void {
         visitor.visitArray(this);
     }
+}
+
+class PArrayMemento extends PropertyMemento {
+    array: PropertyMemento[] = [];
 }

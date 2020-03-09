@@ -1,6 +1,7 @@
 import { Serializable } from "./Serializable";
 import { PropertyVisitor } from "./PropertyVisitor";
 import { Property } from "./Property";
+import { PropertyMemento } from "./PropertyMemento";
 
 @Serializable('core.property.PBoolean')
 export class PBoolean extends Property<boolean> {
@@ -18,4 +19,8 @@ export class PBoolean extends Property<boolean> {
         visitor.visitBoolean(this);
     }
 
+}
+
+class PBooleanMemento extends PropertyMemento {
+    boolean: boolean = false;
 }
