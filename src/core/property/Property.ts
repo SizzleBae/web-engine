@@ -16,8 +16,8 @@ export abstract class Property<T> {
     abstract copy(source: Property<T>): this;
     abstract clone(): Property<T>;
 
-    abstract memento(): PropertyMemento;
-    abstract restore(memento: PropertyMemento): void;
+    abstract memento(keepExternal?: boolean, lookup?: Map<object, string>): PropertyMemento;
+    abstract restore(memento: PropertyMemento, lookup?: Map<string, object>): void;
 
     abstract accept(visitor: PropertyVisitor): void;
 

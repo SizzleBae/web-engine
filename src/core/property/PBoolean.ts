@@ -19,8 +19,18 @@ export class PBoolean extends Property<boolean> {
         visitor.visitBoolean(this);
     }
 
+    memento(keepExternal?: boolean | undefined, lookup?: Map<object, string> | undefined): PropertyMemento {
+        const memento = new PBooleanMemento();
+        memento.boolean = this.value;
+        return memento;
+    }
+
+    restore(memento: PBooleanMemento, lookup?: Map<string, object> | undefined): void {
+        this.value = memento.boolean;
+    }
+
 }
 
 class PBooleanMemento extends PropertyMemento {
-    boolean: boolean = false;
+    boolean: boolean | undefined;
 }

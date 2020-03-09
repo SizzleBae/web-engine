@@ -6,6 +6,7 @@ import { PropertySerializer } from "./PropertySerializer";
 import { PropertyDeserializer } from "./PropertyDeserializer";
 import { SerializedObject, SerializedObjects } from "./SerializedObject";
 import { Property } from "./Property";
+import { PropertyMemento } from "./PropertyMemento";
 
 export class SerializeUtils {
 
@@ -60,9 +61,8 @@ export class SerializeUtils {
         const result = new SerializedObjects();
 
         // Serialize each property and add them to result
-        const serializer = new PropertySerializer(keepExternal, lookup);
         properties.forEach(property => {
-            result.properties[lookup.get(property) as string] = serializer.serialize(property);
+            result.properties[lookup.get(property) as string] = property.memento(keepExternal, lookup);
         })
 
         // Serialize each object and add them to result
@@ -97,7 +97,7 @@ export class SerializeUtils {
         }
 
         // Find properties in constructed objects, map them to their serialized counterpart and add them to lookup
-        const properties: Map<Property<any>, SerializedObject> = new Map();
+        const properties: Map<Property<any>, PropertyMemento> = new Map();
         objects.forEach((serializedObject, object) => {
             PropertyUtils.forEachPropertyIn(object, (property, key) => {
                 const propertyID = serializedObject.data[key] as string;
@@ -112,9 +112,8 @@ export class SerializeUtils {
         })
 
         // Finally, go through each property and deserialize them
-        const deserializer = new PropertyDeserializer(lookup);
         properties.forEach((serializedProperty, property) => {
-            deserializer.deserialize(property, serializedProperty);
+            property, serializedProperty;
         });
 
         return [...objects.keys()];

@@ -1,6 +1,7 @@
 import { Serializable } from "./Serializable";
 import { PropertyVisitor } from "./PropertyVisitor";
 import { Property } from "./Property";
+import { PropertyMemento } from "./PropertyMemento";
 
 @Serializable('core.property.PNumber')
 export class PNumber extends Property<number> {
@@ -14,8 +15,21 @@ export class PNumber extends Property<number> {
         return new PNumber(this.value);
     }
 
+    memento(keepExternal?: boolean | undefined, lookup?: Map<object, string> | undefined): PropertyMemento {
+        const memento = new PNumberBoolean();
+        memento.number = this.value;
+        return memento;
+    }
+
+    restore(memento: PNumberBoolean, lookup?: Map<string, object> | undefined): void {
+        this.value = memento.number;
+    }
+
     accept(visitor: PropertyVisitor): void {
         visitor.visitNumber(this);
     }
+}
 
+class PNumberBoolean extends PropertyMemento {
+    number: number | undefined;
 }
