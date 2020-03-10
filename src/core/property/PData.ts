@@ -1,9 +1,9 @@
-import { Serializable, META_SERIALIZABLE_ID_KEY } from "./Serializable";
+import { Serializable, META_SERIALIZABLE_ID_KEY } from "../serialize/Serializable";
 import { PropertyVisitor } from "./PropertyVisitor";
 import { Property } from "./Property";
 import { PropertyMemento } from "./PropertyMemento";
 import { PropertyUtils } from "./PropertyUtils";
-import { SerializableConstructorMap } from "./SerializableConstructorMap";
+import { SerializableConstructorMap } from "../serialize/SerializableConstructorMap";
 
 @Serializable('core.property.PData')
 export class PData<T extends object> extends Property<T> {

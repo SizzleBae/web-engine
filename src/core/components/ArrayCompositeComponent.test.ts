@@ -1,7 +1,7 @@
-import { Serializable } from "../property/Serializable";
+import { Serializable } from "../serialize/Serializable";
 import { ArrayCompositeComponent } from "./ArrayCompositeComponent";
 import { LeafComponent } from "./LeafComponent";
-import { SerializeUtils } from "../property/SerializeUtils";
+import { SerializeUtils } from "../serialize/SerializeUtils";
 import { PReference } from "../property/PReference";
 import { PString } from "../property/PString";
 

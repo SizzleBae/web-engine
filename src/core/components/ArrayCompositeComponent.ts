@@ -1,6 +1,6 @@
 import { CompositeComponent } from "./CompositeComponent";
 import { Component } from "./Component";
-import { Serializable } from "../property/Serializable";
+import { Serializable } from "../serialize/Serializable";
 import { PArray } from "../property/PArray";
 import { PReference } from "../property/PReference";
 

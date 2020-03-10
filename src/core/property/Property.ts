@@ -4,7 +4,7 @@ import { EventDelegate } from "../event/EventDelegate";
 
 export abstract class Property<T> {
 
-    readonly onChanged = new EventDelegate<{ oldValue: T | undefined, newValue: T | undefined }>();
+    readonly onChanged = new EventDelegate<{ property: Property<T>, oldValue: T | undefined, newValue: T | undefined }>();
 
     constructor(protected value?: T) { }
 
@@ -13,7 +13,7 @@ export abstract class Property<T> {
     }
 
     set(value: T | undefined): void {
-        this.onChanged.emit({ oldValue: this.value, newValue: value })
+        this.onChanged.emit({ property: this, oldValue: this.value, newValue: value });
         this.value = value;
     }
 

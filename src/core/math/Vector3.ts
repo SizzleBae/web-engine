@@ -1,4 +1,4 @@
-import { Serializable } from "../property/Serializable";
+import { Serializable } from "../serialize/Serializable";
 import { PNumber } from "../property/PNumber";
 
 @Serializable('core.math.Vector3')

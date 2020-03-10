@@ -1,9 +1,9 @@
 
 import { Property } from "./Property";
 import { PropertyVisitor } from "./PropertyVisitor";
-import { Serializable, META_SERIALIZABLE_ID_KEY } from "./Serializable";
+import { Serializable, META_SERIALIZABLE_ID_KEY } from "../serialize/Serializable";
 import { PropertyMemento } from "./PropertyMemento";
-import { SerializableConstructorMap } from "./SerializableConstructorMap";
+import { SerializableConstructorMap } from "../serialize/SerializableConstructorMap";
 
 @Serializable('core.property.PArray')
 export class PArray<T> extends Property<Property<T>[]> {

@@ -1,10 +1,10 @@
 import { META_SERIALIZABLE_ID_KEY } from "./Serializable";
 import { SerializableConstructorMap } from "./SerializableConstructorMap";
-import { PropertyUtils } from "./PropertyUtils";
+import { PropertyUtils } from "../property/PropertyUtils";
 import uuidv1 from 'uuid/v1'
 import { SerializedObject, SerializedObjects } from "./SerializedObject";
-import { Property } from "./Property";
-import { PropertyMemento } from "./PropertyMemento";
+import { Property } from "../property/Property";
+import { PropertyMemento } from "../property/PropertyMemento";
 
 export class SerializeUtils {
 

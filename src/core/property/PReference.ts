@@ -1,4 +1,4 @@
-import { Serializable } from "./Serializable";
+import { Serializable } from "../serialize/Serializable";
 import { PropertyVisitor } from "./PropertyVisitor";
 import { Property } from "./Property";
 import { PropertyMemento } from "./PropertyMemento";

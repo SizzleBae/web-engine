@@ -1,4 +1,4 @@
-import { PropertyMemento } from "./PropertyMemento";
+import { PropertyMemento } from "../property/PropertyMemento";
 
 export class SerializedObject {
     public constructorID: string = "";

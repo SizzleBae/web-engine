@@ -1,5 +1,5 @@
 import { LeafComponent } from "./LeafComponent";
-import { Serializable } from "../property/Serializable";
+import { Serializable } from "../serialize/Serializable";
 import { TransformComponent } from "./TransformComponent";
 import uuidv1 from 'uuid/v1'
 import { PString } from "../property/PString";

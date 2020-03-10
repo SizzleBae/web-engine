@@ -1,6 +1,6 @@
 import { LeafComponent } from "./LeafComponent";
 import { IDComponent } from "./IDComponent";
-import { Serializable } from "../property/Serializable";
+import { Serializable } from "../serialize/Serializable";
 import { PReference } from "../property/PReference";
 import { PNumber } from "../property/PNumber";
 import { PArray } from "../property/PArray";
