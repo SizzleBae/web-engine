@@ -16,12 +16,12 @@ export class PNumber extends Property<number> {
     }
 
     memento(keepExternal?: boolean | undefined, lookup?: Map<object, string> | undefined): PropertyMemento {
-        const memento = new PNumberBoolean();
+        const memento = new PNumberMemento();
         memento.number = this.value;
         return memento;
     }
 
-    restore(memento: PNumberBoolean, lookup?: Map<string, object> | undefined): void {
+    restore(memento: PNumberMemento, lookup?: Map<string, object> | undefined): void {
         this.value = memento.number;
     }
 
@@ -30,6 +30,6 @@ export class PNumber extends Property<number> {
     }
 }
 
-class PNumberBoolean extends PropertyMemento {
+class PNumberMemento extends PropertyMemento {
     number: number | undefined;
 }

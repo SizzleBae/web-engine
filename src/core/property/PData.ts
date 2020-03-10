@@ -3,7 +3,6 @@ import { PropertyVisitor } from "./PropertyVisitor";
 import { Property } from "./Property";
 import { PropertyMemento } from "./PropertyMemento";
 import { PropertyUtils } from "./PropertyUtils";
-import { PropertySerializer } from "./PropertySerializer";
 import { SerializableConstructorMap } from "./SerializableConstructorMap";
 
 @Serializable('core.property.PData')

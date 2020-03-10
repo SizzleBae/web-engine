@@ -39,7 +39,7 @@ describe('SerializeUtils', () => {
             new PReference(outsider),
             new PReference(serializing2));
 
-        const serialized = SerializeUtils.serializeObjects([serializing, serializing2], true);
+        const serialized = SerializeUtils.serializeObjects([serializing, serializing2], false);
 
         const deserialized = SerializeUtils.derializeObjects(serialized);
 
@@ -50,7 +50,7 @@ describe('SerializeUtils', () => {
         expect(deserializing2.object1.get()?.value1.get()).toBe(96);
 
         expect(deserializing2.array1.get()?.[0].get()).toBe(deserializing);
-        expect(deserializing2.array1.get()?.[1].get()).toBe(outsider);
+        expect(deserializing2.array1.get()?.[1].get()).toBe(undefined);
         expect(deserializing2.array1.get()?.[2].get()).toBe(deserializing2);
 
         expect(deserializing2.array1.get()?.[1].get()?.object1.get()?.value1.get()).toBe(123);

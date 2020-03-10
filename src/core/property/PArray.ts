@@ -25,7 +25,10 @@ export class PArray<T> extends Property<Property<T>[]> {
         const memento = new PArrayMemento();
 
         this.value?.forEach(subProperty => {
-            memento.array.push([Reflect.get(subProperty.constructor, META_SERIALIZABLE_ID_KEY), subProperty.memento(keepExternal, lookup)]);
+            memento.array.push({
+                constructorID: Reflect.get(subProperty.constructor, META_SERIALIZABLE_ID_KEY),
+                memento: subProperty.memento(keepExternal, lookup)
+            });
         });
 
         return memento;
@@ -35,13 +38,13 @@ export class PArray<T> extends Property<Property<T>[]> {
         this.value = [];
 
         if (memento.array) {
-            memento.array.forEach(subMemento => {
-                const SubProperty = SerializableConstructorMap.instance().getOwnerConstructor(subMemento[0]);
+            memento.array.forEach(element => {
+                const SubProperty = SerializableConstructorMap.instance().getOwnerConstructor(element.constructorID);
 
                 if (SubProperty) {
                     const subProperty = new SubProperty() as Property<T>;
 
-                    subProperty.restore(subMemento, lookup);
+                    subProperty.restore(element.memento, lookup);
 
                     this.value?.push(subProperty);
                 } else {
@@ -57,5 +60,5 @@ export class PArray<T> extends Property<Property<T>[]> {
 }
 
 class PArrayMemento extends PropertyMemento {
-    array: [string, PropertyMemento][] = [];
+    array: { constructorID: string, memento: PropertyMemento }[] = [];
 }
