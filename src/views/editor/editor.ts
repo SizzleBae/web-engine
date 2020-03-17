@@ -1,3 +1,6 @@
+import { GLShader } from "../../core/render/gl/GLShader";
+import { GLProgram } from "../../core/render/gl/GLProgram";
+
 export class Editor {
 
     initialize() {
@@ -12,8 +15,28 @@ export class Editor {
             return;
         }
 
+        const vsSource = `
+            attribute vec4 aVertexPosition;
 
+            uniform mat4 uModelViewMatrix;
+            uniform mat4 uProjectionMatrix;
 
+            void main() {
+            gl_Position = uProjectionMatrix * uModelViewMatrix * aVertexPosition;
+            }
+        `;
+
+        const fsSource = `
+            void main() {
+            gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0);
+            }
+        `;
+
+        const shader = new GLShader(gl, vsSource, fsSource);
+
+        const program = new GLProgram(gl, shader);
+
+        mat4.creat
         // Set clear color to black, fully opaque
         gl.clearColor(0.0, 0.0, 1.0, 1.0);
         // Clear the color buffer with specified clear color
