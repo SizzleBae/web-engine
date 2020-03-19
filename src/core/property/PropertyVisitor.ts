@@ -1,12 +1,12 @@
-import { Property } from "./Property";
+import { DynamicProperty } from "./DynamicProperty";
 
 export interface PropertyVisitor {
 
-    visitString(property: Property<string>): void;
-    visitNumber(property: Property<number>): void;
-    visitBoolean(property: Property<boolean>): void;
-    visitData<T extends object>(property: Property<T>): void;
-    visitReference<T extends object>(property: Property<T>): void;
-    visitArray<T>(property: Property<Property<T>[]>): void;
+    visitString(property: DynamicProperty<string>): void;
+    visitNumber(property: DynamicProperty<number>): void;
+    visitBoolean(property: DynamicProperty<boolean>): void;
+    visitData<T extends object>(property: DynamicProperty<T>): void;
+    visitReference<T extends object>(property: DynamicProperty<T>): void;
+    visitArray<T>(property: DynamicProperty<DynamicProperty<T>[]>): void;
 
 }

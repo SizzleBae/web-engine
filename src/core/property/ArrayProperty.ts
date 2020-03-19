@@ -1,13 +1,44 @@
-import { Property } from "./Property";
+import { DynamicProperty } from "./DynamicProperty";
+import { PStrategyData } from "./PStrategy";
+import { PropertyMemento } from "./PropertyMemento";
 
-export class ArrayProperty<T> extends Property<T[]> {
+export class ArrayProperty<T> extends DynamicProperty<T[]> {
 
-    memento(keepExternal?: boolean | undefined, lookup?: Map<object, string> | undefined): PropertyMemento {
+    memento(keepExternal?: boolean | undefined, lookup?: Map<object, string> | undefined): ArrayPropertyMemento {
+        const memento = new ArrayPropertyMemento();
+
+        const strategy = this.strategy<T>();
+        if (this.value) {
+            const array: PStrategyData[] = [];
+            this.value.forEach(element => {
+                array.push(strategy.memento(element, keepExternal, lookup));
+            });
+            memento.array = array;
+        }
+
+        return memento;
+    }
+
+    restore(memento: ArrayPropertyMemento, lookup?: Map<string, object> | undefined): void {
+
+        if (memento.array) {
+            const strategy = this.strategy<T>();
+
+            const array: T[] = [];
+            memento.array.forEach(data => {
+                // TODO: Handle undefined?
+                array.push(strategy.restore(data, lookup) as T);
+            })
+
+            this.value = array;
+        } else {
+            this.value = undefined;
+        }
 
     }
 
-    restore(memento: PropertyMemento, lookup?: Map<string, object> | undefined): void {
+}
 
-    }
-
+export class ArrayPropertyMemento extends PropertyMemento {
+    array: PStrategyData[] | undefined;
 }

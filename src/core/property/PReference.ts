@@ -1,9 +1,8 @@
-import { PropertyMemento } from "./PropertyMemento";
-import { PStrategy } from "./PStrategy";
+import { PStrategy, PStrategyMemento, PStrategyData } from "./PStrategy";
 
 export class PReference<T extends object> extends PStrategy<T> {
 
-    memento(value: T | undefined, keepExternal: boolean = false, lookup: Map<object, string> = new Map()): any {
+    memento(value: T | undefined, keepExternal: boolean = false, lookup: Map<object, string> = new Map()): PStrategyData {
         const memento = new PReferenceMemento<T>();
 
         if (value) {
@@ -47,7 +46,7 @@ export class PReference<T extends object> extends PStrategy<T> {
 
 }
 
-class PReferenceMemento<T extends object> extends PropertyMemento {
+class PReferenceMemento<T extends object> implements PStrategyMemento {
     id: string | undefined;
     object: T | undefined;
 }

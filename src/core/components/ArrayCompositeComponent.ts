@@ -1,21 +1,19 @@
 import { CompositeComponent } from "./CompositeComponent";
 import { Component } from "./Component";
 import { Serializable } from "../serialize/Serializable";
-import { PArray } from "../property/PArray";
 import { PReference } from "../property/PReference";
+import { ArrayProperty } from "../property/ArrayProperty";
+import { PType } from "../property/DynamicProperty";
 
 @Serializable('core.components.ArrayCompositeComponent')
 export class ArrayCompositeComponent extends CompositeComponent {
-	private readonly children = new PArray<Component>([]);
+	private readonly children = new ArrayProperty<Component>(PType.Reference, []);
 
 	public *[Symbol.iterator](): Iterator<Component> {
 		const children = this.children.get();
 		if (children) {
 			for (const child of children) {
-				const c = child.get();
-				if (c) {
-					yield c;
-				}
+				yield child;
 			}
 		}
 	}
@@ -23,7 +21,7 @@ export class ArrayCompositeComponent extends CompositeComponent {
 	public add(component: Component): void {
 		super.add(component);
 
-		this.children.get()?.push(new PReference(component));
+		this.children.get()?.push(component);
 
 		component.parent.get()?.remove(component);
 
@@ -34,7 +32,7 @@ export class ArrayCompositeComponent extends CompositeComponent {
 	public remove(component: Component): void {
 		super.remove(component);
 
-		const index = this.children.get()?.findIndex(child => child.get() === component) as number;
+		const index = this.children.get()?.findIndex(child => child === component) as number;
 
 		if (index !== -1) {
 			this.children.get()?.splice(index, 1);

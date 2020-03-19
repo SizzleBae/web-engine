@@ -1,35 +1,13 @@
-import { Serializable } from "../serialize/Serializable";
-import { PropertyVisitor } from "./PropertyVisitor";
-import { Property } from "./Property";
-import { PropertyMemento } from "./PropertyMemento";
+import { PStrategy, PStrategyData } from "./PStrategy";
 
-@Serializable('core.property.PNumber')
-export class PNumber extends Property<number> {
+export class PNumber extends PStrategy<number> {
 
-    copy(source: Property<number>): this {
-        this.value = source.get();
-        return this;
+    memento(value: number | undefined, keepExternal?: boolean, lookup?: Map<object, string>): PStrategyData {
+        return value;
     }
 
-    clone(): Property<number> {
-        return new PNumber(this.value);
-    }
-
-    memento(keepExternal?: boolean | undefined, lookup?: Map<object, string> | undefined): PropertyMemento {
-        const memento = new PNumberMemento();
-        memento.number = this.value;
+    restore(memento: number | undefined, lookup?: Map<string, object>): number | undefined {
         return memento;
     }
 
-    restore(memento: PNumberMemento, lookup?: Map<string, object> | undefined): void {
-        this.value = memento.number;
-    }
-
-    accept(visitor: PropertyVisitor): void {
-        visitor.visitNumber(this);
-    }
-}
-
-class PNumberMemento extends PropertyMemento {
-    number: number | undefined;
 }

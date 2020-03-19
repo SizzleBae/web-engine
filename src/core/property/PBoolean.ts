@@ -1,36 +1,13 @@
-import { Serializable } from "../serialize/Serializable";
-import { PropertyVisitor } from "./PropertyVisitor";
-import { Property } from "./Property";
-import { PropertyMemento } from "./PropertyMemento";
+import { PStrategy, PStrategyData } from "./PStrategy";
 
-@Serializable('core.property.PBoolean')
-export class PBoolean extends Property<boolean> {
+export class PBoolean extends PStrategy<boolean> {
 
-    copy(source: Property<boolean>): this {
-        this.value = source.get();
-        return this;
+    memento(value: boolean | undefined, keepExternal?: boolean, lookup?: Map<object, string>): PStrategyData {
+        return value;
     }
 
-    clone(): Property<boolean> {
-        return new PBoolean(this.value);
-    }
-
-    accept(visitor: PropertyVisitor): void {
-        visitor.visitBoolean(this);
-    }
-
-    memento(keepExternal?: boolean | undefined, lookup?: Map<object, string> | undefined): PropertyMemento {
-        const memento = new PBooleanMemento();
-        memento.boolean = this.value;
+    restore(memento: boolean | undefined, lookup?: Map<string, object>): boolean | undefined {
         return memento;
     }
 
-    restore(memento: PBooleanMemento, lookup?: Map<string, object> | undefined): void {
-        this.value = memento.boolean;
-    }
-
-}
-
-class PBooleanMemento extends PropertyMemento {
-    boolean: boolean | undefined;
 }

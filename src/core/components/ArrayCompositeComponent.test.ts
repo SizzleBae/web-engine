@@ -2,14 +2,15 @@ import { Serializable } from "../serialize/Serializable";
 import { ArrayCompositeComponent } from "./ArrayCompositeComponent";
 import { LeafComponent } from "./LeafComponent";
 import { SerializeUtils } from "../serialize/SerializeUtils";
-import { PReference } from "../property/PReference";
 import { PString } from "../property/PString";
+import { PType } from "../property/DynamicProperty";
+import { Property } from "../property/Property";
 
 describe('ArrayCompositeComponent', () => {
     @Serializable('test.TestComponent')
     class TestComponent extends LeafComponent {
-        readonly reference = new PReference<TestComponent>();
-        readonly payload = new PString('No payload...');
+        readonly reference = new Property<TestComponent>(PType.Reference);
+        readonly payload = new Property<string>(PType.String, 'No payload...');
     }
 
     it('can serialize', () => {

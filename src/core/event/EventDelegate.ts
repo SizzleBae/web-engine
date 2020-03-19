@@ -1,8 +1,9 @@
 export class EventDelegate<T> {
     private listeners: Array<(data: T) => void> = [];
 
-    subscribe(listener: (data: T) => void) {
+    subscribe(listener: (data: T) => void): (data: T) => void {
         this.listeners.push(listener);
+        return listener;
     }
 
     unsubscribe(listener: (data: T) => void) {

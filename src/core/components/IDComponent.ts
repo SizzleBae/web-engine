@@ -1,8 +1,9 @@
 import { LeafComponent } from "./LeafComponent";
 import { Serializable } from "../serialize/Serializable";
-import { TransformComponent } from "./TransformComponent";
-import uuidv1 from 'uuid/v1'
 import { PString } from "../property/PString";
+import { Property } from "../property/Property";
+import uuidv1 from 'uuid/v1'
+import { PType } from "../property/DynamicProperty";
 
 /**
  * An immutable component that stores a string ID.
@@ -11,15 +12,15 @@ import { PString } from "../property/PString";
 @Serializable('core.components.IDComponent')
 export class IDComponent extends LeafComponent {
 
-	public readonly id: PString;
+	public readonly id: Property<string>;
 
 	constructor(id?: string) {
 		super();
 
 		if (id) {
-			this.id = new PString(id);
+			this.id = new Property<string>(PType.String, id);
 		} else {
-			this.id = new PString(uuidv1());
+			this.id = new Property<string>(PType.String, uuidv1());
 		}
 
 	}

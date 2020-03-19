@@ -1,10 +1,11 @@
 import { Serializable } from "../serialize/Serializable";
-import { PNumber } from "../property/PNumber";
+import { Property } from "../property/Property";
+import { PType } from "../property/DynamicProperty";
 
 @Serializable('core.math.Vector3')
 export class Vector3 {
-    readonly x = new PNumber(0);
-    readonly y = new PNumber(0);
-    readonly z = new PNumber(0);
+    readonly x = new Property(PType.Number, 0);
+    readonly y = new Property(PType.Number, 0);
+    readonly z = new Property(PType.Number, 0);
 
 }

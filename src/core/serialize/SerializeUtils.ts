@@ -3,7 +3,7 @@ import { SerializableConstructorMap } from "./SerializableConstructorMap";
 import { PropertyUtils } from "../property/PropertyUtils";
 import uuidv1 from 'uuid/v1'
 import { SerializedObject, SerializedObjects } from "./SerializedObject";
-import { Property } from "../property/Property";
+import { DynamicProperty } from "../property/DynamicProperty";
 import { PropertyMemento } from "../property/PropertyMemento";
 
 export class SerializeUtils {
@@ -12,7 +12,7 @@ export class SerializeUtils {
         // Create lookup for given objects using uuid
         const lookup = new Map<object, string>();
 
-        const properties = new Set<Property<any>>();
+        const properties = new Set<DynamicProperty<any>>();
         const objects = new Set<object>();
 
         targets.forEach(object => {
@@ -66,7 +66,7 @@ export class SerializeUtils {
         }
 
         // Find properties in constructed objects, map them to their serialized counterpart and add them to lookup
-        const properties: Map<Property<any>, PropertyMemento> = new Map();
+        const properties: Map<DynamicProperty<any>, PropertyMemento> = new Map();
         objects.forEach((serializedObject, object) => {
             PropertyUtils.forEachPropertyIn(object, (property, key) => {
                 const propertyID = serializedObject.properties[key];

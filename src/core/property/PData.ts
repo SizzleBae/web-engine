@@ -1,32 +1,33 @@
 import { Serializable, META_SERIALIZABLE_ID_KEY } from "../serialize/Serializable";
 import { PropertyVisitor } from "./PropertyVisitor";
-import { Property } from "./Property";
+import { DynamicProperty } from "./DynamicProperty";
 import { PropertyMemento } from "./PropertyMemento";
 import { PropertyUtils } from "./PropertyUtils";
 import { SerializableConstructorMap } from "../serialize/SerializableConstructorMap";
+import { PStrategy, PStrategyData, PStrategyMemento } from "./PStrategy";
 
 @Serializable('core.property.PData')
-export class PData<T extends object> extends Property<T> {
+export class PData<T extends object> extends PStrategy<T> {
 
-    copy(source: Property<T>): this {
-        this.value = source.get();
-        return this;
-    }
+    // copy(source: Property<T>): this {
+    //     this.value = source.get();
+    //     return this;
+    // }
 
-    clone(): Property<T> {
-        return new PData(this.value);
-    }
+    // clone(): Property<T> {
+    //     return new PData(this.value);
+    // }
 
-    memento(keepExternal?: boolean, lookup?: Map<object, string>): PropertyMemento {
+    memento(value: T | undefined, keepExternal: boolean = false, lookup: Map<object, string> = new Map()): PStrategyData {
         const memento = new PDataMemento();
 
-        if (this.value) {
-            const constructorID = Reflect.get(this.value.constructor, META_SERIALIZABLE_ID_KEY);
+        if (value) {
+            const constructorID = Reflect.get(value.constructor, META_SERIALIZABLE_ID_KEY);
 
             if (constructorID) {
                 memento.constructorID = constructorID;
 
-                PropertyUtils.forEachPropertyIn(this.value, (property, key) => {
+                PropertyUtils.forEachPropertyIn(value, (property, key) => {
                     memento.properties[key] = property.memento(keepExternal, lookup);
                 });
 
@@ -36,7 +37,7 @@ export class PData<T extends object> extends Property<T> {
         return memento;
     }
 
-    restore(memento: PDataMemento<T>, lookup?: Map<string, object>): void {
+    restore(memento: PDataMemento, lookup: Map<string, object> = new Map()): T | undefined {
         const Constructor = SerializableConstructorMap.instance().getOwnerConstructor(memento.constructorID);
 
         if (Constructor) {
@@ -52,17 +53,19 @@ export class PData<T extends object> extends Property<T> {
                 }
             });
 
-            this.value = object;
+            return object;
         }
+
+        return undefined;
     }
 
-    accept(visitor: PropertyVisitor): void {
-        visitor.visitData(this);
-    }
+    // accept(visitor: PropertyVisitor): void {
+    //     visitor.visitData(this);
+    // }
 
 }
 
-class PDataMemento<T extends object> extends PropertyMemento {
+class PDataMemento implements PStrategyMemento {
     constructorID: string = "";
     properties: Record<string, PropertyMemento> = {};
 }

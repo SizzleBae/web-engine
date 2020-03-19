@@ -1,23 +1,23 @@
 import { EventDelegate } from "../event/EventDelegate";
-import { PReference } from "../property/PReference";
+import { Property } from "../property/Property";
+import { PType } from "../property/DynamicProperty";
 
 export abstract class Component {
 	/**
 	 * Optional parent of this component, used for efficiency purposes
 	 */
-	public readonly parent = new PReference<Component>();
+	public readonly parent = new Property<Component>(PType.Reference);
 
 	/**
-	 * Fired when this component is added to another component, Component parameter is the new parent
-	 * @param Component New parent
+	 * Fired when this component is added to another component.
 	 */
-	public readonly onComponentAdded = new EventDelegate<[Component]>();
+	public readonly onComponentAdded = new EventDelegate<{ newParent: Component }>();
 
 	/**
 	 * Fired when this component is removed from another component, Component parameter is the old parent
 	 * @param Component Old parent 
 	 */
-	public readonly onComponentRemoved = new EventDelegate<[Component]>();
+	public readonly onComponentRemoved = new EventDelegate<{ oldParent: Component }>();
 
 	public abstract [Symbol.iterator](): Iterator<Component>;
 
