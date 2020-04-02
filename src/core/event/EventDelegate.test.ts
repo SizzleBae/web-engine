@@ -21,5 +21,6 @@ describe('EventDelegate', () => {
         delegate.emit({ name: 'testName2', count: 3, state: false });
 
         expect(callCount).toBe(1);
+
     });
 });
