@@ -1,5 +1,6 @@
 import { GLShader } from "../../core/render/gl/GLShader";
 import { GLProgram } from "../../core/render/gl/GLProgram";
+import { Matrix4 } from "../../core/math/Matrix4";
 
 export class Editor {
 
@@ -36,7 +37,8 @@ export class Editor {
 
         const program = new GLProgram(gl, shader);
 
-        mat4.creat
+        const mat4 = new Matrix4();
+
         // Set clear color to black, fully opaque
         gl.clearColor(0.0, 0.0, 1.0, 1.0);
         // Clear the color buffer with specified clear color

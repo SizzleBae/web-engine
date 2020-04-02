@@ -3,9 +3,10 @@ export class GLShader {
     readonly vertexShader: WebGLShader;
     readonly fragmentShader: WebGLShader;
 
-    constructor(private gl: WebGL2RenderingContext, vertexShader: string, fragmentShader: string) {
-        this.vertexShader = this.loadShader(gl.VERTEX_SHADER, vertexShader);
-        this.fragmentShader = this.loadShader(gl.FRAGMENT_SHADER, fragmentShader);
+    constructor(private gl: WebGL2RenderingContext, vertex: () => string, fragment: () => string) {
+
+        this.vertexShader = this.loadShader(gl.VERTEX_SHADER, vertex());
+        this.fragmentShader = this.loadShader(gl.FRAGMENT_SHADER, fragment());
 
     }
 

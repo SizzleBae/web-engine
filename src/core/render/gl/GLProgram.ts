@@ -21,4 +21,12 @@ export class GLProgram {
 
         this.program = program;
     }
+
+    getAttribLocation(name: string) {
+        return this.gl.getAttribLocation(this.program, name);
+    }
+
+    getUniformLocation(name: string) {
+        return this.gl.getUniformLocation(this.program, name);
+    }
 }

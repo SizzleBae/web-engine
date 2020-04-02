@@ -25,7 +25,7 @@ describe('ArrayCompositeComponent', () => {
         serializingChild1.reference.set(serializingChild3);
         serializingChild1.payload.set(`Here's the payload!!`);
 
-        const json = SerializeUtils.serializeObjects([serializingChild1, serializingChild2, serializingChild3], true);
+        const json = SerializeUtils.serializeObjects([originalArrayComp, serializingChild1, serializingChild2, serializingChild3], true);
 
         const duplicateArrayComp = SerializeUtils.derializeObjects(json)[0] as ArrayCompositeComponent;
 

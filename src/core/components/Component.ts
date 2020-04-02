@@ -14,8 +14,7 @@ export abstract class Component {
 	public readonly onComponentAdded = new EventDelegate<{ newParent: Component }>();
 
 	/**
-	 * Fired when this component is removed from another component, Component parameter is the old parent
-	 * @param Component Old parent 
+	 * Fired when this component is removed from another component.
 	 */
 	public readonly onComponentRemoved = new EventDelegate<{ oldParent: Component }>();
 
