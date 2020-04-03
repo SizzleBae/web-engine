@@ -7,9 +7,10 @@ import { PNumber } from "./PNumber";
 import { PBoolean } from "./PBoolean";
 import { PString } from "./PString";
 import { PData } from "./PData";
+import { PProperty } from "./PProperty";
 
 export enum PType {
-    Number, Boolean, String, Data, Reference
+    Number, Boolean, String, Data, Reference, Property
 }
 
 export abstract class DynamicProperty<T> {
@@ -19,13 +20,14 @@ export abstract class DynamicProperty<T> {
         new PBoolean(),
         new PString(),
         new PData(),
-        new PReference()
+        new PReference(),
+        new PProperty()
     ];
 
     readonly onChanged = new EventDelegate<{ property: DynamicProperty<T>, oldValue: T | undefined, newValue: T | undefined }>();
 
     constructor(
-        protected strategyType: PType = PType.Number,
+        public strategyType: PType = PType.Number,
         protected value?: T) { }
 
     get(): T | undefined {
