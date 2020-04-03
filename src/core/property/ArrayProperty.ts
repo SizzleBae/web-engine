@@ -4,7 +4,7 @@ import { PropertyMemento } from "./PropertyMemento";
 
 export class ArrayProperty<T> extends DynamicProperty<T[]> {
 
-    memento(keepExternal?: boolean | undefined, lookup?: Map<object, string> | undefined): ArrayPropertyMemento {
+    memento(keepExternal?: boolean, lookup?: Map<object, string>): ArrayPropertyMemento {
         const memento = new ArrayPropertyMemento();
 
         const strategy = this.strategy<T>();
@@ -19,7 +19,7 @@ export class ArrayProperty<T> extends DynamicProperty<T[]> {
         return memento;
     }
 
-    restore(memento: ArrayPropertyMemento, lookup?: Map<string, object> | undefined): void {
+    restore(memento: ArrayPropertyMemento, lookup?: Map<string, object>): void {
 
         if (memento.array) {
             const strategy = this.strategy<T>();

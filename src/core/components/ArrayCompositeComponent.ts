@@ -1,9 +1,8 @@
-import { CompositeComponent } from "./CompositeComponent";
 import { Component } from "./Component";
+import { CompositeComponent } from "./CompositeComponent";
 import { Serializable } from "../serialize/Serializable";
-import { PReference } from "../property/PReference";
-import { ArrayProperty } from "../property/ArrayProperty";
 import { PType } from "../property/DynamicProperty";
+import { ArrayProperty } from "../property/ArrayProperty";
 
 @Serializable('core.components.ArrayCompositeComponent')
 export class ArrayCompositeComponent extends CompositeComponent {
