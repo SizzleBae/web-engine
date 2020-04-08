@@ -1,8 +1,13 @@
 import { DynamicProperty } from "./DynamicProperty";
 import { PStrategyData } from "./PStrategy";
 import { PropertyMemento } from "./PropertyMemento";
+import { EventDelegate } from "../event/EventDelegate";
+import { Serializable } from "../serialize/Serializable";
 
+@Serializable('core.property.ArrayProperty')
 export class ArrayProperty<T> extends DynamicProperty<T[]> {
+
+    readonly onArrayChanged = new EventDelegate<void>();
 
     memento(keepExternal?: boolean, lookup?: Map<object, string>): ArrayPropertyMemento {
         const memento = new ArrayPropertyMemento();
@@ -34,7 +39,16 @@ export class ArrayProperty<T> extends DynamicProperty<T[]> {
         } else {
             this.value = undefined;
         }
+    }
 
+    replace(index: number, newElement: T): void {
+        if (this.value) {
+            this.value[index] = newElement;
+
+            this.onArrayChanged.emit();
+        } else {
+            throw new Error(`Attempted to set element in array property when array is undefined!`);
+        }
     }
 
 }

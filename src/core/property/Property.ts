@@ -1,7 +1,9 @@
 import { DynamicProperty, PType } from "./DynamicProperty";
 import { PropertyMemento } from "./PropertyMemento";
 import { PStrategyData } from "./PStrategy";
+import { Serializable } from "../serialize/Serializable";
 
+@Serializable('core.property.Property')
 export class Property<T> extends DynamicProperty<T> {
 
     memento(keepExternal?: boolean | undefined, lookup?: Map<object, string> | undefined): SinglePropertyMemento {

@@ -6,9 +6,13 @@ import { GLProgram } from "../gl/GLProgram";
 import { GLShader } from "../gl/GLShader";
 
 export class GLBasicMaterial extends GLMaterial {
+	readonly modelViewMatrix: Property<Matrix4> = new Property(PType.Data, new Matrix4());
 	readonly projectionMatrix: Property<Matrix4> = new Property(PType.Data, new Matrix4());
 
-	constructor(gl: WebGL2RenderingContext) {
+	readonly uModelViewMatrix: WebGLUniformLocation;
+	readonly uProjectionMatrix: WebGLUniformLocation;
+
+	constructor(private gl: WebGL2RenderingContext) {
 		super(new GLProgram(gl,
 			new GLShader(gl,
 				() => `
@@ -26,8 +30,17 @@ export class GLBasicMaterial extends GLMaterial {
 					}`
 			)));
 
-		this.projectionMatrix.onChanged.subscribe((data) => {
-			this.program.
-		})
+		this.uModelViewMatrix = this.program.getUniformLocation('uModelViewMatrix') as WebGLUniformLocation;
+		this.uProjectionMatrix = this.program.getUniformLocation('uProjectionMatrix') as WebGLUniformLocation;
+
+		this.projectionMatrix.get()?.m.onArrayChanged.subscribe(() => {
+			const array = this.projectionMatrix.get()?.m.get() as number[];
+			this.gl.uniformMatrix4fv(this.uProjectionMatrix, false, array);
+		});
+
+		this.modelViewMatrix.get()?.m.onArrayChanged.subscribe(() => {
+			const array = this.modelViewMatrix.get()?.m.get() as number[];
+			this.gl.uniformMatrix4fv(this.uModelViewMatrix, false, array);
+		});
 	}
 }

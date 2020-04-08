@@ -14,7 +14,6 @@ export class TransformComponent extends LeafComponent {
 
 	public readonly children = new ArrayProperty<TransformComponent>(PType.Reference, []);
 
-
 	constructor() {
 		super();
 
