@@ -1,13 +1,19 @@
-import { DynamicProperty } from "./DynamicProperty";
+import { DynamicProperty, PType, unsafe, safity, Value } from "./DynamicProperty";
 import { PStrategyData } from "./PStrategy";
 import { PropertyMemento } from "./PropertyMemento";
 import { EventDelegate } from "../event/EventDelegate";
 import { Serializable } from "../serialize/Serializable";
 
 @Serializable('core.property.ArrayProperty')
-export class ArrayProperty<T> extends DynamicProperty<T[]> {
+export class ArrayProperty<T, S extends safity = unsafe> extends DynamicProperty<T[], S> {
 
     readonly onArrayChanged = new EventDelegate<void>();
+
+    constructor(strategyType?: PType, value?: Value<T[], S>) {
+        super(strategyType, value);
+
+        this.onChanged.subscribe(data => this.onArrayChanged.emit());
+    }
 
     memento(keepExternal?: boolean, lookup?: Map<object, string>): ArrayPropertyMemento {
         const memento = new ArrayPropertyMemento();
@@ -35,9 +41,9 @@ export class ArrayProperty<T> extends DynamicProperty<T[]> {
                 array.push(strategy.restore(data, lookup) as T);
             })
 
-            this.value = array;
+            this.value = array as Value<T[], S>;
         } else {
-            this.value = undefined;
+            this.value = undefined as Value<T[], S>;
         }
     }
 

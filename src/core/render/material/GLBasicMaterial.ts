@@ -1,13 +1,14 @@
 import { GLMaterial } from "./GLMaterial";
 import { Property } from "../../property/Property";
 import { Matrix4 } from "../../math/Matrix4";
-import { PType } from "../../property/DynamicProperty";
+import { PType, safe } from "../../property/DynamicProperty";
 import { GLProgram } from "../gl/GLProgram";
 import { GLShader } from "../gl/GLShader";
 
 export class GLBasicMaterial extends GLMaterial {
-	readonly modelViewMatrix: Property<Matrix4> = new Property(PType.Data, new Matrix4());
-	readonly projectionMatrix: Property<Matrix4> = new Property(PType.Data, new Matrix4());
+
+	readonly modelViewMatrix: Property<Matrix4, safe> = new Property(PType.Data, new Matrix4());
+	readonly projectionMatrix: Property<Matrix4, safe> = new Property(PType.Data, new Matrix4());
 
 	readonly uModelViewMatrix: WebGLUniformLocation;
 	readonly uProjectionMatrix: WebGLUniformLocation;
@@ -33,13 +34,13 @@ export class GLBasicMaterial extends GLMaterial {
 		this.uModelViewMatrix = this.program.getUniformLocation('uModelViewMatrix') as WebGLUniformLocation;
 		this.uProjectionMatrix = this.program.getUniformLocation('uProjectionMatrix') as WebGLUniformLocation;
 
-		this.projectionMatrix.get()?.m.onArrayChanged.subscribe(() => {
-			const array = this.projectionMatrix.get()?.m.get() as number[];
+		this.projectionMatrix.get().e.onArrayChanged.subscribe(() => {
+			const array = this.projectionMatrix.get().e.get() as number[];
 			this.gl.uniformMatrix4fv(this.uProjectionMatrix, false, array);
 		});
 
-		this.modelViewMatrix.get()?.m.onArrayChanged.subscribe(() => {
-			const array = this.modelViewMatrix.get()?.m.get() as number[];
+		this.modelViewMatrix.get().e.onArrayChanged.subscribe(() => {
+			const array = this.modelViewMatrix.get().e.get() as number[];
 			this.gl.uniformMatrix4fv(this.uModelViewMatrix, false, array);
 		});
 	}

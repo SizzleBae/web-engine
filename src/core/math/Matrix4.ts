@@ -1,16 +1,17 @@
-import { ArrayProperty, ArrayPropertyMemento } from "../property/ArrayProperty";
-import { PType } from "../property/DynamicProperty";
+import { ArrayProperty } from "../property/ArrayProperty";
+import { PType, safe } from "../property/DynamicProperty";
 import { Serializable } from "../serialize/Serializable";
+import { Vector3 } from "./Vector3";
 
 @Serializable('core.math.Matrix4')
 export class Matrix4 {
-    readonly m: ArrayProperty<number>;
+    readonly e: ArrayProperty<number, safe>;
 
-    constructor(m?: number[]) {
-        if (m) {
-            this.m = new ArrayProperty<number>(PType.Number, m);
+    constructor(e?: number[]) {
+        if (e) {
+            this.e = new ArrayProperty(PType.Number, e);
         } else {
-            this.m = new ArrayProperty<number>(PType.Number, [
+            this.e = new ArrayProperty(PType.Number, [
                 1, 0, 0, 0,
                 0, 1, 0, 0,
                 0, 0, 1, 0,
@@ -20,53 +21,109 @@ export class Matrix4 {
     }
 
     [Symbol.iterator](): Iterator<number> {
-        return this.get()[Symbol.iterator]();
+        return this.e.get()[Symbol.iterator]();
     }
 
-    multiply(b: Matrix4): Matrix4 {
-        this.multiplyMatrices(this, b);
-        return this;
+    /**
+     * Generates a perspective projection matrix with the given bounds.
+     * Passing null/undefined/no value for far will generate infinite projection matrix.
+     *
+     * @param outMat mat4 frustum matrix will be written into
+     * @param fovy Vertical field of view in radians
+     * @param aspect Aspect ratio. typically viewport width/height
+     * @param near Near bound of the frustum
+     * @param far Far bound of the frustum, can be null or Infinity
+     * @returns outMat
+     */
+    static perspective(outMat: Matrix4, fovy: number, aspect: number, near: number, far: number): Matrix4 {
+        const f = 1.0 / Math.tan(fovy / 2);
+
+        const out = outMat.e.get();
+        out[0] = f / aspect;
+        out[1] = 0;
+        out[2] = 0;
+        out[3] = 0;
+        out[4] = 0;
+        out[5] = f;
+        out[6] = 0;
+        out[7] = 0;
+        out[8] = 0;
+        out[9] = 0;
+        out[11] = -1;
+        out[12] = 0;
+        out[13] = 0;
+        out[15] = 0;
+
+        if (far != null && far !== Infinity) {
+            const nf = 1 / (near - far);
+            out[10] = (far + near) * nf;
+            out[14] = 2 * far * near * nf;
+        } else {
+            out[10] = -1;
+            out[14] = -2 * near;
+        }
+
+        return outMat;
     }
 
-    multiplyMatrices(a: Matrix4, b: Matrix4): Matrix4 {
-        const ae = a.get();
-        const be = b.get();
-        const te = this.get();
+    /**
+     * Translate a mat4 by the given vector
+     *
+     * @param outMat the receiving matrix
+     * @param a the matrix to translate
+     * @param v vector to translate by
+     * @returns outMat
+     */
+    static translate(outMat: Matrix4, aMat: Matrix4, v: Vector3): Matrix4 {
+        const out = outMat.e.get();
+        const a = aMat.e.get();
 
-        const a11 = ae[0], a12 = ae[4], a13 = ae[8], a14 = ae[12];
-        const a21 = ae[1], a22 = ae[5], a23 = ae[9], a24 = ae[13];
-        const a31 = ae[2], a32 = ae[6], a33 = ae[10], a34 = ae[14];
-        const a41 = ae[3], a42 = ae[7], a43 = ae[11], a44 = ae[15];
+        let x = v.x,
+            y = v.y,
+            z = v.z;
+        let a00, a01, a02, a03;
+        let a10, a11, a12, a13;
+        let a20, a21, a22, a23;
 
-        const b11 = be[0], b12 = be[4], b13 = be[8], b14 = be[12];
-        const b21 = be[1], b22 = be[5], b23 = be[9], b24 = be[13];
-        const b31 = be[2], b32 = be[6], b33 = be[10], b34 = be[14];
-        const b41 = be[3], b42 = be[7], b43 = be[11], b44 = be[15];
+        if (a === out) {
+            out[12] = a[0] * x + a[4] * y + a[8] * z + a[12];
+            out[13] = a[1] * x + a[5] * y + a[9] * z + a[13];
+            out[14] = a[2] * x + a[6] * y + a[10] * z + a[14];
+            out[15] = a[3] * x + a[7] * y + a[11] * z + a[15];
+        } else {
+            a00 = a[0];
+            a01 = a[1];
+            a02 = a[2];
+            a03 = a[3];
+            a10 = a[4];
+            a11 = a[5];
+            a12 = a[6];
+            a13 = a[7];
+            a20 = a[8];
+            a21 = a[9];
+            a22 = a[10];
+            a23 = a[11];
 
-        te[0] = a11 * b11 + a12 * b21 + a13 * b31 + a14 * b41;
-        te[4] = a11 * b12 + a12 * b22 + a13 * b32 + a14 * b42;
-        te[8] = a11 * b13 + a12 * b23 + a13 * b33 + a14 * b43;
-        te[12] = a11 * b14 + a12 * b24 + a13 * b34 + a14 * b44;
+            out[0] = a00;
+            out[1] = a01;
+            out[2] = a02;
+            out[3] = a03;
+            out[4] = a10;
+            out[5] = a11;
+            out[6] = a12;
+            out[7] = a13;
+            out[8] = a20;
+            out[9] = a21;
+            out[10] = a22;
+            out[11] = a23;
 
-        te[1] = a21 * b11 + a22 * b21 + a23 * b31 + a24 * b41;
-        te[5] = a21 * b12 + a22 * b22 + a23 * b32 + a24 * b42;
-        te[9] = a21 * b13 + a22 * b23 + a23 * b33 + a24 * b43;
-        te[13] = a21 * b14 + a22 * b24 + a23 * b34 + a24 * b44;
+            out[12] = a00 * x + a10 * y + a20 * z + a[12];
+            out[13] = a01 * x + a11 * y + a21 * z + a[13];
+            out[14] = a02 * x + a12 * y + a22 * z + a[14];
+            out[15] = a03 * x + a13 * y + a23 * z + a[15];
+        }
 
-        te[2] = a31 * b11 + a32 * b21 + a33 * b31 + a34 * b41;
-        te[6] = a31 * b12 + a32 * b22 + a33 * b32 + a34 * b42;
-        te[10] = a31 * b13 + a32 * b23 + a33 * b33 + a34 * b43;
-        te[14] = a31 * b14 + a32 * b24 + a33 * b34 + a34 * b44;
-
-        te[3] = a41 * b11 + a42 * b21 + a43 * b31 + a44 * b41;
-        te[7] = a41 * b12 + a42 * b22 + a43 * b32 + a44 * b42;
-        te[11] = a41 * b13 + a42 * b23 + a43 * b33 + a44 * b43;
-        te[15] = a41 * b14 + a42 * b24 + a43 * b34 + a44 * b44;
-
-        this.m.onArrayChanged.emit();
-
-        return this;
-
+        return outMat;
     }
 
     clone(): Matrix4 {
@@ -74,7 +131,7 @@ export class Matrix4 {
     }
 
     get(): number[] {
-        return (this.m.get() as number[]);
+        return (this.e.get() as number[]);
     }
 
 }

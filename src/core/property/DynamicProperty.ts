@@ -1,4 +1,3 @@
-import { PropertyVisitor } from "./PropertyVisitor";
 import { PropertyMemento } from "./PropertyMemento";
 import { EventDelegate } from "../event/EventDelegate";
 import { PStrategy } from "./PStrategy";
@@ -13,8 +12,13 @@ export enum PType {
     Number, Boolean, String, Data, Reference, Property
 }
 
-export abstract class DynamicProperty<T> {
+export type unsafe = false;
+export type safe = true;
+export type safity = safe | unsafe;
 
+export type Value<T, S extends safity = unsafe> = S extends safe ? T : T | undefined;
+
+export abstract class DynamicProperty<T, S extends safity = unsafe> {
     private static readonly strategies: ReadonlyArray<PStrategy<any>> = [
         new PNumber(),
         new PBoolean(),
@@ -24,17 +28,23 @@ export abstract class DynamicProperty<T> {
         new PProperty()
     ];
 
-    readonly onChanged = new EventDelegate<{ property: DynamicProperty<T>, oldValue: T | undefined, newValue: T | undefined }>();
+    protected value: Value<T, S>;
+
+    readonly onChanged = new EventDelegate<{ property: DynamicProperty<T, S>, oldValue: Value<T, S>, newValue: Value<T, S> }>();
 
     constructor(
         public strategyType: PType = PType.Number,
-        protected value?: T) { }
+        value?: Value<T, S>) {
 
-    get(): T | undefined {
+        this.value = value as Value<T, S>;
+
+    }
+
+    get(): Value<T, S> {
         return this.value;
     }
 
-    set(value: T | undefined): void {
+    set(value: Value<T, S>): void {
         this.onChanged.emit({ property: this, oldValue: this.value, newValue: value });
         this.value = value;
     }

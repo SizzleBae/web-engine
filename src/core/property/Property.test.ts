@@ -5,7 +5,7 @@ import { Serializable } from "../serialize/Serializable";
 describe('Property', () => {
     @Serializable('test.ObjectTest')
     class ObjectTest {
-        number = new Property<number>(PType.Number, 0);
+        number = new Property<number, true>(PType.Number, 0);
         string = new Property<string>(PType.String, '');
     }
 

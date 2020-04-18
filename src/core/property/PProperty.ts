@@ -1,10 +1,10 @@
 import { PStrategy, PStrategyData, PStrategyMemento } from "./PStrategy";
-import { DynamicProperty, PType } from "./DynamicProperty";
+import { DynamicProperty, PType, safity } from "./DynamicProperty";
 import { PropertyMemento } from "./PropertyMemento";
 import { META_SERIALIZABLE_ID_KEY } from "../serialize/Serializable";
 import { SerializableConstructorMap } from "../serialize/SerializableConstructorMap";
 
-export class PProperty<T extends DynamicProperty<U>, U> extends PStrategy<T> {
+export class PProperty<T extends DynamicProperty<U, S>, U, S extends safity> extends PStrategy<T> {
 
     memento(value: T | undefined, keepExternal?: boolean, lookup?: Map<object, string>): PStrategyData {
         const memento = new PPropertyMemento();
