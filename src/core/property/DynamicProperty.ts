@@ -12,8 +12,8 @@ export enum PType {
     Number, Boolean, String, Data, Reference, Property
 }
 
-export type unsafe = false;
-export type safe = true;
+export type unsafe = 'unsafe';
+export type safe = 'safe';
 export type safity = safe | unsafe;
 
 export type Value<T, S extends safity = unsafe> = S extends safe ? T : T | undefined;

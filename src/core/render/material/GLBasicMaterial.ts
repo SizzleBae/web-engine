@@ -10,6 +10,7 @@ export class GLBasicMaterial extends GLMaterial {
 	readonly modelViewMatrix: Property<Matrix4, safe> = new Property(PType.Data, new Matrix4());
 	readonly projectionMatrix: Property<Matrix4, safe> = new Property(PType.Data, new Matrix4());
 
+	readonly aVertexPosition: number;
 	readonly uModelViewMatrix: WebGLUniformLocation;
 	readonly uProjectionMatrix: WebGLUniformLocation;
 
@@ -31,17 +32,21 @@ export class GLBasicMaterial extends GLMaterial {
 					}`
 			)));
 
+		this.aVertexPosition = this.program.getAttribLocation('aVertexPosition');
 		this.uModelViewMatrix = this.program.getUniformLocation('uModelViewMatrix') as WebGLUniformLocation;
 		this.uProjectionMatrix = this.program.getUniformLocation('uProjectionMatrix') as WebGLUniformLocation;
 
 		this.projectionMatrix.get().e.onArrayChanged.subscribe(() => {
-			const array = this.projectionMatrix.get().e.get() as number[];
-			this.gl.uniformMatrix4fv(this.uProjectionMatrix, false, array);
+			console.log('hererre!');
+			this.gl.uniformMatrix4fv(this.uProjectionMatrix, false, this.projectionMatrix.get().e.get());
 		});
 
 		this.modelViewMatrix.get().e.onArrayChanged.subscribe(() => {
-			const array = this.modelViewMatrix.get().e.get() as number[];
-			this.gl.uniformMatrix4fv(this.uModelViewMatrix, false, array);
+			this.gl.uniformMatrix4fv(this.uModelViewMatrix, false, this.modelViewMatrix.get().e.get());
 		});
+	}
+
+	use() {
+		this.gl.useProgram(this.program.program);
 	}
 }

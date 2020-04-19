@@ -9,7 +9,9 @@
     "type-check:watch": "npm run type-check -- --watch",
     "build:types": "tsc --emitDeclarationOnly",
     "build:js": "webpack --mode=development",
-    "build": "npm run build:js"
+    "build": "npm run build:js",
+    "build:watch": "nodemon --exec npm run build",
+    "start": "node ./server/app.js"
   },
   "author": {
     "name": "SizzleBae",
@@ -37,6 +39,7 @@
     "fork-ts-checker-webpack-plugin": "^3.1.1",
     "jest": "^24.9.0",
     "jest-diff": "^24.9.0",
+    "nodemon": "^2.0.3",
     "ts-jest": "^24.3.0",
     "typescript": "^3.7.5",
     "webpack": "^4.41.6",
@@ -44,6 +47,8 @@
   },
   "dependencies": {
     "babel-jest": "^25.1.0",
+    "cors": "^2.8.5",
+    "express": "^4.17.1",
     "reflect-metadata": "^0.1.13",
     "regenerator-runtime": "^0.13.3",
     "uuid": "^3.4.0"
@@ -55,5 +60,16 @@
     "last 2 version",
     ">1%",
     "not dead"
-  ]
+  ],
+  "nodemonConfig": {
+    "ignore": [
+      "test/*",
+      "docs/*"
+    ],
+    "watch": [
+      "src"
+    ],
+    "ext": "ts",
+    "delay": "2500"
+  }
 }

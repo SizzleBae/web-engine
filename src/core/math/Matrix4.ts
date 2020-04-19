@@ -63,6 +63,8 @@ export class Matrix4 {
             out[14] = -2 * near;
         }
 
+        outMat.e.onArrayChanged.emit();
+
         return outMat;
     }
 
@@ -122,6 +124,8 @@ export class Matrix4 {
             out[14] = a02 * x + a12 * y + a22 * z + a[14];
             out[15] = a03 * x + a13 * y + a23 * z + a[15];
         }
+
+        outMat.e.onArrayChanged.emit();
 
         return outMat;
     }
