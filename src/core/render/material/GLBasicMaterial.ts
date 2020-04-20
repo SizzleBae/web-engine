@@ -28,7 +28,7 @@ export class GLBasicMaterial extends GLMaterial {
 					}`,
 				() => `
 					void main() {
-						gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0);
+						gl_FragColor = vec4(1.0, 0.0, 1.0, 1.0);
 					}`
 			)));
 
@@ -37,7 +37,6 @@ export class GLBasicMaterial extends GLMaterial {
 		this.uProjectionMatrix = this.program.getUniformLocation('uProjectionMatrix') as WebGLUniformLocation;
 
 		this.projectionMatrix.get().e.onArrayChanged.subscribe(() => {
-			console.log('hererre!');
 			this.gl.uniformMatrix4fv(this.uProjectionMatrix, false, this.projectionMatrix.get().e.get());
 		});
 

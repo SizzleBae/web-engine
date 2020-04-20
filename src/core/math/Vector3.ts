@@ -1,5 +1,4 @@
 import { Serializable } from "../serialize/Serializable";
-import { Property } from "../property/Property";
 import { PType } from "../property/DynamicProperty";
 import { ArrayProperty } from "../property/ArrayProperty";
 

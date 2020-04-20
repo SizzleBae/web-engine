@@ -1,3 +1,6 @@
+/**
+ * A singleton that stores default constructors with a string key
+ */
 export class SerializableConstructorMap {
     private static _instance: SerializableConstructorMap | undefined;
 

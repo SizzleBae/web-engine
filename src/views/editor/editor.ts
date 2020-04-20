@@ -1,6 +1,11 @@
+import WebGLDebugUtils from "../../utils/webgl-debug"
 import { Matrix4 } from "../../core/math/Matrix4";
 import { GLBasicMaterial } from "../../core/render/material/GLBasicMaterial";
 import { Vector3 } from "../../core/math/Vector3";
+import { GLVertexBuffer } from "../../core/render/gl/GLVertexBuffer";
+import { GLIndexBuffer } from "../../core/render/gl/GLIndexBuffer";
+import { GLVertexBufferLayout } from "../../core/render/gl/GLVertexBufferLayout";
+import { GLVertexArray } from "../../core/render/gl/GLVertexArray";
 
 export class Editor {
 
@@ -8,32 +13,44 @@ export class Editor {
         const canvas = document.getElementById("renderCanvas") as HTMLCanvasElement;
 
         // Initialize the GL context
-        const gl = canvas.getContext("webgl2");
-
+        let gl = canvas.getContext("webgl2");
         // Only continue if WebGL is available and working
         if (gl === null) {
             alert("Unable to initialize WebGL. Your browser or machine may not support it.");
             return;
         }
 
+        // Setup webgl debugging
+        const webglDebugUtils = WebGLDebugUtils();
+        gl = webglDebugUtils.makeDebugContext(gl, (err, funcName, args) => {
+            throw new Error(`${webglDebugUtils.glEnumToString(err)} was caused by call to: ${funcName}`);
+        });
+
         const material = new GLBasicMaterial(gl);
-
-        // Create a buffer for the square's positions.
-        const positionBuffer = gl.createBuffer();
-
-        gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
 
         // Now create an array of positions for the square.
         const positions = [
-            -1.0, 2.0,
-            1.0, 1.0,
             -1.0, -1.0,
             1.0, -1.0,
+            1.0, 1.0,
+            -1.0, 1.0,
         ];
 
-        gl.bufferData(gl.ARRAY_BUFFER,
-            new Float32Array(positions),
-            gl.STATIC_DRAW);
+        // Create a buffer for the square's positions.
+        const vertices = new GLVertexBuffer(gl, new Float32Array(positions));
+
+        const indices = [
+            0, 1, 2,
+            2, 3, 0
+        ];
+
+        const indexBuffer = new GLIndexBuffer(gl, indices);
+
+        const vertexLayout = new GLVertexBufferLayout(gl);
+        vertexLayout.pushFloat(2);
+
+        const vertexArray = new GLVertexArray(gl);
+        vertexArray.addBuffer(vertices, vertexLayout);
 
         gl.clearColor(0.0, 0.0, 0.0, 1.0);  // Clear to black, fully opaque
         gl.clearDepth(1.0);                 // Clear everything
@@ -43,33 +60,12 @@ export class Editor {
         // Clear the canvas before we start drawing on it.
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
+        material.use();
+
         const fieldOfView = 45 * Math.PI / 180;   // in radians
         const aspect = canvas.width / canvas.height;
         const zNear = 0.1;
         const zFar = 100.0;
-
-        // Tell WebGL how to pull out the positions from the position
-        // buffer into the vertexPosition attribute.
-        {
-            const numComponents = 2;  // pull out 2 values per iteration
-            const type = gl.FLOAT;    // the data in the buffer is 32bit floats
-            const normalize = false;  // don't normalize
-            const stride = 0;         // how many bytes to get from one set of values to the next
-            // 0 = use type and numComponents above
-            const offset = 0;         // how many bytes inside the buffer to start from
-            gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
-            gl.vertexAttribPointer(
-                material.aVertexPosition,
-                numComponents,
-                type,
-                normalize,
-                stride,
-                offset);
-            gl.enableVertexAttribArray(material.aVertexPosition);
-        }
-
-        material.use();
-
         Matrix4.perspective(material.projectionMatrix.get(), fieldOfView, aspect, zNear, zFar);
 
         Matrix4.translate(material.modelViewMatrix.get(), material.modelViewMatrix.get(), new Vector3(0, 0, -6));
@@ -77,9 +73,11 @@ export class Editor {
         console.log(material);
 
         {
+            vertexArray.bind();
+            indexBuffer.bind();
+
             const offset = 0;
-            const vertexCount = 4;
-            gl.drawArrays(gl.TRIANGLE_STRIP, offset, vertexCount);
+            gl.drawElements(gl.TRIANGLES, indices.length, gl.UNSIGNED_INT, offset);
         }
     }
 
