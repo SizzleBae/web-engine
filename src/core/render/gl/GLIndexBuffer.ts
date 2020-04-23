@@ -1,11 +1,11 @@
 export class GLIndexBuffer {
 
-    private buffer: WebGLBuffer;
+    private id: WebGLBuffer;
 
     constructor(private gl: WebGL2RenderingContext, indices: number[]) {
         const buffer = gl.createBuffer();
         if (buffer) {
-            this.buffer = buffer;
+            this.id = buffer;
         } else {
             throw new Error('Failed to create GL buffer!');
         }
@@ -16,8 +16,12 @@ export class GLIndexBuffer {
             gl.STATIC_DRAW);
     }
 
+    delete() {
+        this.gl.deleteBuffer(this.id);
+    }
+
     bind() {
-        this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, this.buffer);
+        this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, this.id);
     }
 
     unbind() {

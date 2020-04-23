@@ -45,7 +45,7 @@ export class GLBasicMaterial extends GLMaterial {
 		});
 	}
 
-	use() {
+	bind() {
 		this.gl.useProgram(this.program.program);
 	}
 }

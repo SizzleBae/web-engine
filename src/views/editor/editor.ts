@@ -36,9 +36,6 @@ export class Editor {
             -1.0, 1.0,
         ];
 
-        // Create a buffer for the square's positions.
-        const vertices = new GLVertexBuffer(gl, new Float32Array(positions));
-
         const indices = [
             0, 1, 2,
             2, 3, 0
@@ -48,37 +45,32 @@ export class Editor {
 
         const vertexLayout = new GLVertexBufferLayout(gl);
         vertexLayout.pushFloat(2);
+        const vertices = new GLVertexBuffer(gl, vertexLayout, new Float32Array(positions));
 
         const vertexArray = new GLVertexArray(gl);
-        vertexArray.addBuffer(vertices, vertexLayout);
+        vertexArray.setIndexBuffer(indexBuffer);
+        vertexArray.addVertexBuffer(vertices);
 
         gl.clearColor(0.0, 0.0, 0.0, 1.0);  // Clear to black, fully opaque
         gl.clearDepth(1.0);                 // Clear everything
         gl.enable(gl.DEPTH_TEST);           // Enable depth testing
         gl.depthFunc(gl.LEQUAL);            // Near things obscure far things
 
-        // Clear the canvas before we start drawing on it.
-        gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+        material.bind();
 
-        material.use();
-
-        const fieldOfView = 45 * Math.PI / 180;   // in radians
-        const aspect = canvas.width / canvas.height;
-        const zNear = 0.1;
-        const zFar = 100.0;
-        Matrix4.perspective(material.projectionMatrix.get(), fieldOfView, aspect, zNear, zFar);
+        const fieldOfView = 60 * Math.PI / 180;   // in radians
+        Matrix4.perspective(material.projectionMatrix.get(), fieldOfView, canvas.width / canvas.height, 0.1, 100.0);
 
         Matrix4.translate(material.modelViewMatrix.get(), material.modelViewMatrix.get(), new Vector3(0, 0, -6));
 
-        console.log(material);
+        vertexArray.bind();
+        indexBuffer.bind();
 
-        {
-            vertexArray.bind();
-            indexBuffer.bind();
+        // Clear the canvas before we start drawing on it.
+        gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-            const offset = 0;
-            gl.drawElements(gl.TRIANGLES, indices.length, gl.UNSIGNED_INT, offset);
-        }
+        gl.drawElements(gl.TRIANGLES, indices.length, gl.UNSIGNED_INT, 0);
+
     }
 
     render() {
