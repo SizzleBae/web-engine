@@ -1,50 +1,42 @@
-import { DynamicProperty, PType, unsafe, safity, Value } from "./DynamicProperty";
+import { DynamicProperty, PType } from "./DynamicProperty";
 import { PStrategyData } from "./PStrategy";
 import { PropertyMemento } from "./PropertyMemento";
 import { EventDelegate } from "../event/EventDelegate";
 import { Serializable } from "../serialize/Serializable";
 
 @Serializable('core.property.ArrayProperty')
-export class ArrayProperty<T, S extends safity = unsafe> extends DynamicProperty<T[], S> {
+export class ArrayProperty<T> extends DynamicProperty<T[]> {
 
     readonly onArrayChanged = new EventDelegate<void>();
 
-    constructor(strategyType?: PType, value?: Value<T[], S>) {
+    constructor(strategyType: PType, value: T[]) {
         super(strategyType, value);
 
         this.onChanged.subscribe(data => this.onArrayChanged.emit());
     }
 
     memento(keepExternal?: boolean, lookup?: Map<object, string>): ArrayPropertyMemento {
-        const memento = new ArrayPropertyMemento();
 
         const strategy = this.strategy<T>();
-        if (this.value) {
-            const array: PStrategyData[] = [];
-            this.value.forEach(element => {
-                array.push(strategy.memento(element, keepExternal, lookup));
-            });
-            memento.array = array;
-        }
+        const array: PStrategyData[] = [];
+        this.value.forEach(element => {
+            array.push(strategy.memento(element, keepExternal, lookup));
+        });
 
-        return memento;
+        return { array };
     }
 
     restore(memento: ArrayPropertyMemento, lookup?: Map<string, object>): void {
 
-        if (memento.array) {
-            const strategy = this.strategy<T>();
+        const strategy = this.strategy<T>();
 
-            const array: T[] = [];
-            memento.array.forEach(data => {
-                // TODO: Handle undefined?
-                array.push(strategy.restore(data, lookup) as T);
-            })
+        const array: T[] = [];
+        memento.array.forEach(data => {
+            // TODO: Handle undefined?
+            array.push(strategy.restore(data, lookup) as T);
+        })
 
-            this.value = array as Value<T[], S>;
-        } else {
-            this.value = undefined as Value<T[], S>;
-        }
+        this.value = array;
     }
 
     replace(index: number, newElement: T): void {
@@ -56,9 +48,8 @@ export class ArrayProperty<T, S extends safity = unsafe> extends DynamicProperty
             throw new Error(`Attempted to set element in array property when array is undefined!`);
         }
     }
-
 }
 
-export class ArrayPropertyMemento extends PropertyMemento {
-    array: PStrategyData[] | undefined;
+export type ArrayPropertyMemento = {
+    array: PStrategyData[]
 }

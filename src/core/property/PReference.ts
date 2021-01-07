@@ -1,24 +1,23 @@
-import { PStrategy, PStrategyMemento, PStrategyData } from "./PStrategy";
+import { PStrategy, PStrategyData } from "./PStrategy";
 
 export class PReference<T extends object> extends PStrategy<T> {
 
-    memento(value: T | undefined, keepExternal: boolean = false, lookup: Map<object, string> = new Map()): PStrategyData {
-        const memento = new PReferenceMemento<T>();
+    memento(value: T, keepExternal: boolean = false, lookup: Map<object, string> = new Map()): PStrategyData {
 
         if (value) {
             const referenceID = lookup.get(value);
 
             if (referenceID) {
-                memento.id = referenceID;
+                return { id: referenceID };
             } else if (keepExternal) {
-                memento.object = value;
+                return { object: value };
             }
         }
 
-        return memento;
+        return {};
     }
 
-    restore(memento: PReferenceMemento<T>, lookup: Map<string, object> = new Map()): T | undefined {
+    restore(memento: PReferenceMemento<T>, lookup: Map<string, object> = new Map()): T {
         if (memento.id) {
             const object = lookup.get(memento.id) as T | undefined;
             if (!object) {
@@ -26,27 +25,14 @@ export class PReference<T extends object> extends PStrategy<T> {
             }
 
             return object;
-        } else {
+        } else if (memento.object) {
             return memento.object;
         }
+        return undefined as any;
     }
-
-    // copy(source: Property<T>): this {
-    //     this.value = source.get();
-    //     return this;
-    // }
-
-    // clone(): Property<T> {
-    //     return new PReference(this.value);
-    // }
-
-    // accept(visitor: PropertyVisitor): void {
-    //     visitor.visitReference(this);
-    // }
-
 }
 
-class PReferenceMemento<T extends object> implements PStrategyMemento {
-    id: string | undefined;
-    object: T | undefined;
+export type PReferenceMemento<T extends object> = {
+    id?: string;
+    object?: T;
 }

@@ -1,11 +1,11 @@
 import { ArrayProperty } from "../property/ArrayProperty";
-import { PType, safe } from "../property/DynamicProperty";
+import { PType } from "../property/DynamicProperty";
 import { Serializable } from "../serialize/Serializable";
 import { Vector3 } from "./Vector3";
 
 @Serializable('core.math.Matrix4')
 export class Matrix4 {
-    readonly e: ArrayProperty<number, safe>;
+    readonly e: ArrayProperty<number>;
 
     constructor(e?: number[]) {
         if (e) {

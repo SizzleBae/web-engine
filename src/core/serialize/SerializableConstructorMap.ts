@@ -4,7 +4,7 @@
 export class SerializableConstructorMap {
     private static _instance: SerializableConstructorMap | undefined;
 
-    private map = new Map<string, { new(): {} }>();
+    private map = new Map<string, { new(...args: any[]): {} }>();
 
     protected constructor() { }
 
@@ -13,7 +13,7 @@ export class SerializableConstructorMap {
      * @param name The identifier of the constructor
      * @param owner The property owner constructor
      */
-    public registerSerializableConstructor(name: string, owner: { new(): {} }): void {
+    public registerSerializableConstructor(name: string, owner: { new(...args: any[]): {} }): void {
 
         // Ensure that the name is unique
         if (this.map.has(name)) {
@@ -24,7 +24,7 @@ export class SerializableConstructorMap {
 
     }
 
-    public getOwnerConstructor(name: string): { new(): {} } | undefined {
+    public getOwnerConstructor(name: string): { new(...args: any[]): {} } | undefined {
         return this.map.get(name) as { new(): {} };
     }
 

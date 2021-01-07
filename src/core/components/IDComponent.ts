@@ -1,6 +1,5 @@
 import { LeafComponent } from "./LeafComponent";
 import { Serializable } from "../serialize/Serializable";
-import { PString } from "../property/PString";
 import { Property } from "../property/Property";
 import uuidv1 from 'uuid/v1'
 import { PType } from "../property/DynamicProperty";

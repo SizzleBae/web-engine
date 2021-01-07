@@ -14,6 +14,5 @@ describe("IDComponent", () => {
         const uuid_pattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
         expect(uuid_pattern.test(id2.id.get() as string)).toBeTruthy();
         expect(uuid_pattern.test(id1.id.get() as string)).toBeFalsy();
-
     })
 })

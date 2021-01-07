@@ -12,13 +12,7 @@ export enum PType {
     Number, Boolean, String, Data, Reference, Property
 }
 
-export type unsafe = 'unsafe';
-export type safe = 'safe';
-export type safity = safe | unsafe;
-
-export type Value<T, S extends safity = unsafe> = S extends safe ? T : T | undefined;
-
-export abstract class DynamicProperty<T, S extends safity = unsafe> {
+export abstract class DynamicProperty<T> {
     private static readonly strategies: ReadonlyArray<PStrategy<any>> = [
         new PNumber(),
         new PBoolean(),
@@ -28,23 +22,19 @@ export abstract class DynamicProperty<T, S extends safity = unsafe> {
         new PProperty()
     ];
 
-    protected value: Value<T, S>;
-
-    readonly onChanged = new EventDelegate<{ property: DynamicProperty<T, S>, oldValue: Value<T, S>, newValue: Value<T, S> }>();
+    readonly onChanged = new EventDelegate<{ property: DynamicProperty<T>, oldValue: T, newValue: T }>();
 
     constructor(
-        public strategyType: PType = PType.Number,
-        value?: Value<T, S>) {
-
-        this.value = value as Value<T, S>;
+        public strategyType: PType,
+        protected value: T) {
 
     }
 
-    get(): Value<T, S> {
+    get(): T {
         return this.value;
     }
 
-    set(value: Value<T, S>): void {
+    set(value: T): void {
         this.onChanged.emit({ property: this, oldValue: this.value, newValue: value });
         this.value = value;
     }

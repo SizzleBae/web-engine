@@ -1,14 +1,14 @@
 import { GLMaterial } from "./GLMaterial";
 import { Property } from "../../property/Property";
 import { Matrix4 } from "../../math/Matrix4";
-import { PType, safe } from "../../property/DynamicProperty";
+import { PType } from "../../property/DynamicProperty";
 import { GLProgram } from "../gl/GLProgram";
 import { GLShader } from "../gl/GLShader";
 
 export class GLBasicMaterial extends GLMaterial {
 
-	readonly modelViewMatrix: Property<Matrix4, safe> = new Property(PType.Data, new Matrix4());
-	readonly projectionMatrix: Property<Matrix4, safe> = new Property(PType.Data, new Matrix4());
+	readonly modelViewMatrix: Property<Matrix4> = new Property(PType.Data, new Matrix4());
+	readonly projectionMatrix: Property<Matrix4> = new Property(PType.Data, new Matrix4());
 
 	readonly aVertexPosition: number;
 	readonly uModelViewMatrix: WebGLUniformLocation;

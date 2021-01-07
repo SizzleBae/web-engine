@@ -1,7 +1,7 @@
 import { Component } from "./Component";
 
 export abstract class LeafComponent extends Component {
-  public [Symbol.iterator](): Iterator<Component> {
+  public [Symbol.iterator](): IterableIterator<Component> {
     throw new Error(
       `Attempted to create iterator from a non-composite component : ${this}`
     );

@@ -3,7 +3,7 @@ import { GLShader } from "./GLShader";
 export class GLProgram {
     readonly program: WebGLProgram;
 
-    constructor(private gl: WebGL2RenderingContext, shader: GLShader) {
+    constructor(readonly gl: WebGL2RenderingContext, readonly shader: GLShader) {
 
         const program = this.gl.createProgram();
 

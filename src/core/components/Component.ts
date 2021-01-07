@@ -2,11 +2,16 @@ import { EventDelegate } from "../event/EventDelegate";
 import { Property } from "../property/Property";
 import { PType } from "../property/DynamicProperty";
 
-export abstract class Component {
+/** Workaround for babel transpiling not accepting an iterator of self in Component class */
+abstract class IterableComponent {
+	abstract [Symbol.iterator](): Iterator<Component>
+}
+
+export abstract class Component extends IterableComponent {
 	/**
-	 * Optional parent of this component, used for efficiency purposes
+	 * Parent of this component, used for efficiency purposes
 	 */
-	public readonly parent = new Property<Component>(PType.Reference);
+	public readonly parent = new Property<Component | null>(PType.Reference, null);
 
 	/**
 	 * Fired when this component is added to another component.
@@ -18,13 +23,12 @@ export abstract class Component {
 	 */
 	public readonly onComponentRemoved = new EventDelegate<{ oldParent: Component }>();
 
-	public abstract [Symbol.iterator](): Iterator<Component>;
-
 	/**
 	 * Adds a component to this component's composition
 	 * @param component The component to add
 	 */
 	public abstract add(component: Component): void;
+
 
 	/**
 	 * Removes component from this component's composition

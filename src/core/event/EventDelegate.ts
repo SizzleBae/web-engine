@@ -1,12 +1,12 @@
-export class EventDelegate<T> {
-    private listeners: Array<(data: T) => void> = [];
+export class EventDelegate<T extends any[]> {
+    private listeners: Array<(...data: T) => void> = [];
 
-    subscribe(listener: (data: T) => void): (data: T) => void {
+    subscribe(listener: (...data: T) => void): (...data: T) => void {
         this.listeners.push(listener);
         return listener;
     }
 
-    unsubscribe(listener: (data: T) => void) {
+    unsubscribe(listener: (...data: T) => void) {
         const index = this.listeners.indexOf(listener);
         if (index >= 0) {
             this.listeners.splice(index, 1);
@@ -15,8 +15,8 @@ export class EventDelegate<T> {
         }
     }
 
-    emit(data: T) {
-        this.listeners.forEach(listener => listener(data));
+    emit(...data: T) {
+        this.listeners.forEach(listener => listener(...data));
     }
 
 }

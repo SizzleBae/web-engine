@@ -8,7 +8,7 @@ import { ArrayProperty } from "../property/ArrayProperty";
 export class ArrayCompositeComponent extends CompositeComponent {
 	private readonly children = new ArrayProperty<Component>(PType.Reference, []);
 
-	public *[Symbol.iterator](): Iterator<Component> {
+	public *[Symbol.iterator](): IterableIterator<Component> {
 		const children = this.children.get();
 		if (children) {
 			for (const child of children) {
