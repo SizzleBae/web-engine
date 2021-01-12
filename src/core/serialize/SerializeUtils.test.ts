@@ -1,24 +1,27 @@
 import { SerializeUtils } from "./SerializeUtils";
 import { Serializable } from "./Serializable";
-import { PType } from "../property/DynamicProperty";
-import { Property } from "../property/Property";
-import { ArrayProperty } from "../property/ArrayProperty";
+import { Property } from "../property-new/Property";
+import {PNumber} from "../property-new/strategy/NumberStrategy";
+import {PData} from "../property-new/strategy/DataStrategy";
+import {PRef} from "../property-new/strategy/ReferenceStrategy";
+import {PNullable} from "../property-new/strategy/NullableStrategy";
+import {ArrayProperty} from "../property-new/ArrayProperty";
 
 describe('SerializeUtils', () => {
 
     @Serializable('test.ObjectTest')
     class ObjectTest {
-        value1 = new Property(PType.Number, 1)
-        value2 = new Property(PType.Number, 2)
-        value3 = new Property(PType.Number, 3)
+        value1 = new Property(PNumber(), 1)
+        value2 = new Property(PNumber(), 2)
+        value3 = new Property(PNumber(), 3)
     }
 
     @Serializable('test.ObjectTest2')
     class ObjectTest2 {
-        object1 = new Property<ObjectTest>(PType.Data, new ObjectTest());
-        object2 = new Property<ObjectTest2 | undefined>(PType.Reference, undefined);
-        array1 = new ArrayProperty<ObjectTest2>(PType.Reference, []);
-        prop1 = new Property<Property<ObjectTest> | undefined>(PType.Reference, undefined);
+        object1 = new Property(PData<ObjectTest>(), new ObjectTest());
+        object2 = new Property(PNullable(PRef<ObjectTest2>()), null);
+        array1 = new ArrayProperty(PNullable(PRef<ObjectTest2>()), []);
+        prop1 = new Property(PNullable(PRef<Property<ObjectTest>>()), null);
     }
 
     it('can serialize and deserialize objects', () => {
@@ -35,11 +38,11 @@ describe('SerializeUtils', () => {
         outsider.object1.get().value1.set(123);
 
         serializing2.object2.set(outsider);
-        serializing2.array1.get().push(serializing, outsider, serializing2);
+        serializing2.array1.push(serializing, outsider, serializing2);
 
         const serialized = SerializeUtils.serializeObjects([serializing, serializing2], false);
 
-        const deserialized = SerializeUtils.derializeObjects(serialized);
+        const deserialized = SerializeUtils.deserializeObjects(serialized);
 
         const deserializing = deserialized[0] as ObjectTest2;
         const deserializing2 = deserialized[1] as ObjectTest2;
@@ -47,9 +50,9 @@ describe('SerializeUtils', () => {
         expect(deserializing.object1.get().value1.get()).toBe(69);
         expect(deserializing2.object1.get().value1.get()).toBe(96);
 
-        expect(deserializing2.array1.get()[0]).toBe(deserializing);
+        expect(deserializing2.array1.get(0)).toBe(deserializing);
         //expect(deserializing2.array1.get()?.[1].get()).toBe(outsider);
-        expect(deserializing2.array1.get()[2]).toBe(deserializing2);
+        expect(deserializing2.array1.get(2)).toBe(deserializing2);
 
         //expect(deserializing2.array1.get()?.[1].get()?.object1.get()?.value1.get()).toBe(123);
 

@@ -9,14 +9,22 @@ export class NullableStrategy<T> extends PropertyStrategy<Nullable<T>, Nullable<
 
     serialize(value: Nullable<T>, keepExternal: boolean, lookup: Map<object, string>): Nullable<T> {
         if(value) {
-            return this.wrappedStrategy.serialize(value, keepExternal, lookup);
+            try {
+                return this.wrappedStrategy.serialize(value, keepExternal, lookup);
+            } catch (e) {
+                console.warn(e);
+            }
         }
         return null;
     }
 
     deserialize(memento: Nullable<T>, lookup: Map<string, object>): Nullable<T> {
         if(memento) {
-            return this.wrappedStrategy.deserialize(memento, lookup);
+            try {
+                return this.wrappedStrategy.deserialize(memento, lookup);
+            } catch (e) {
+                console.warn(e);
+            }
         }
         return null;
     }

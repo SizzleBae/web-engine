@@ -14,8 +14,8 @@ export class ReferenceStrategy<T extends object> extends PropertyStrategy<T, PRe
         } else if (keepExternal) {
             return { object: value };
         }
-
-        return {};
+        
+        throw new Error(`ReferenceStrategy: Failed to serialize. Object is not in lookup and keepExternal is false.`);
     }
     
     deserialize(memento: PReferenceMemento, lookup: Map<string, object>): T {
@@ -29,7 +29,8 @@ export class ReferenceStrategy<T extends object> extends PropertyStrategy<T, PRe
         } else if (memento.object) {
             return memento.object as T;
         }
-        throw new Error(`ReferenceStrategy: Memento did not contain an object`);
+        
+        throw new Error(`ReferenceStrategy: Failed to deserialize. Memento did not contain an object`);
     }
 
     modify(value: T): T {

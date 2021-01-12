@@ -4,12 +4,16 @@ import {AbstractProperty} from "./AbstractProperty";
 
 type PropertyMemento = any;
 
-export class Property<T> extends AbstractProperty<PropertyMemento>{
+export class Property<T, TDefault extends T = T> extends AbstractProperty<PropertyMemento>{
 
     readonly onChanged = new EventDelegate<[newValue: T, oldValue: T]>();
 
-    constructor(private strategy: PropertyStrategy<T>, private value: T) {
+    private value: T;
+    
+    constructor(private strategy: PropertyStrategy<T>, value: TDefault) {
         super();
+        
+        this.value = value;
     }
     
     set(value: T) {

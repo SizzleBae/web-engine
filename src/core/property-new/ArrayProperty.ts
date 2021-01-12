@@ -6,22 +6,26 @@ type ArrayPropertyMemento = any[];
 
 export class ArrayProperty<T> extends AbstractProperty<ArrayPropertyMemento> {
 
-    readonly onChanged = new EventDelegate<[index: number, newValue: T, oldValue: T]>();
+    readonly onChanged = new EventDelegate<[array: T[]]>();
 
     constructor(private strategy: PropertyStrategy<T>, private value: T[]) {
         super();
     }
 
     set(index: number, value: T) {
-        const oldValue = this.value[index];
-        const newValue = this.strategy.modify(value);
-        this.value[index] = newValue;
+        this.value[index] = this.strategy.modify(value);
         
-        this.onChanged.emit(index, newValue, oldValue);
+        this.onChanged.emit(this.value);
     }
 
     get(index: number): T {
         return this.value[index];
+    }
+    
+    push(...items: T[]) {
+        this.value.push(...items);
+        
+        this.onChanged.emit(this.value);
     }
     
     [Symbol.iterator]() {
