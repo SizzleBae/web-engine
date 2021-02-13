@@ -1,6 +1,7 @@
 ﻿import {PropertyStrategy} from "./strategy/PropertyStrategy";
 import {EventDelegate} from "../event/EventDelegate";
 import {AbstractProperty} from "./AbstractProperty";
+import {PropertyVisitor} from "./extension/PropertyVisitor";
 
 type PropertyMemento = any;
 
@@ -10,7 +11,7 @@ export class Property<T, TDefault extends T = T> extends AbstractProperty<Proper
 
     private value: T;
     
-    constructor(private strategy: PropertyStrategy<T>, value: TDefault) {
+    constructor(public strategy: PropertyStrategy<T>, value: TDefault) {
         super();
         
         this.value = value;
@@ -33,5 +34,9 @@ export class Property<T, TDefault extends T = T> extends AbstractProperty<Proper
 
     restore(memento: PropertyMemento, lookup: Map<string, object> = new Map()): void {
         this.value = this.strategy.deserialize(memento, lookup);
+    }
+
+    accept(visitor: PropertyVisitor): void {
+        visitor.visitProperty(this);
     }
 }

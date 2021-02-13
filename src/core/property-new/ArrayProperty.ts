@@ -1,6 +1,7 @@
 ﻿import {PropertyStrategy} from "./strategy/PropertyStrategy";
 import {EventDelegate} from "../event/EventDelegate";
 import {AbstractProperty} from "./AbstractProperty";
+import {PropertyVisitor} from "./extension/PropertyVisitor";
 
 type ArrayPropertyMemento = any[];
 
@@ -38,5 +39,9 @@ export class ArrayProperty<T> extends AbstractProperty<ArrayPropertyMemento> {
 
     restore(memento: ArrayPropertyMemento, lookup: Map<string, object> = new Map()): void {
         this.value = memento.map(element => this.strategy.deserialize(element, lookup));
+    }
+
+    accept(visitor: PropertyVisitor): void {
+        visitor.visitArrayProperty(this);
     }
 }

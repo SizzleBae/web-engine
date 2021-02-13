@@ -3,8 +3,9 @@ const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
 
 module.exports = {
   entry: {
-    editor: './src/views/editor/editor.ts',
-    viewer: './src/views/viewer/viewer.ts',
+    //editor: './src/views/editor/editor.ts',
+    //viewer: './src/views/viewer/viewer.ts',
+    playground: './src/views/playground/playground.ts'
   },
 
   output: {
