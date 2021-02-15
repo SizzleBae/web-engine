@@ -1,6 +1,7 @@
 ﻿import {PropertyStrategy} from "./PropertyStrategy";
+import {DataStrategy} from "./DataStrategy";
 
-class Vector {
+export class Vector {
     constructor(public x = 0, public y = 0) {}
 }
 
@@ -27,3 +28,5 @@ export class VectorStrategy extends PropertyStrategy<Vector, VectorMemento> {
         return new Vector();
     }
 }
+
+export const PVector = ()=>new VectorStrategy();

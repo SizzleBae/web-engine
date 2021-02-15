@@ -47,15 +47,18 @@ export class TwoWayArrayProperty extends TwoWayProperty {
         });
         
         this.twoWayArray.forEach((element, index) => {
-            this.root.appendChild(element.root);
-
+            
+            
             const removeButton = document.createElement('button');
             removeButton.innerHTML = 'X';
             
             // Store index in attribute to lookup for when it is pressed
             removeButton.setAttribute("data-remove", index.toString());
 
-            this.root.appendChild(removeButton);
+            const elementContainer = document.createElement('div');
+            elementContainer.appendChild(element.root);
+            elementContainer.appendChild(removeButton);
+            this.root.appendChild(elementContainer);
         });
 
         const addButton = document.createElement('button');
