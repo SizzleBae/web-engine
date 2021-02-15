@@ -36,6 +36,10 @@ export class ReferenceStrategy<T extends object> extends PropertyStrategy<T, PRe
     modify(value: T): T {
         return value;
     }
+
+    createEmpty(): T {
+        throw new ReferenceError("Can not create an empty reference.");
+    }
 }
 
 export const PRef = <T extends object>()=>new ReferenceStrategy<T>();

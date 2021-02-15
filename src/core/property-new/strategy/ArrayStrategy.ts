@@ -19,6 +19,10 @@ export class ArrayStrategy<T> extends PropertyStrategy<T[], PArrayMemento> {
     modify(value: T[]): T[] {
         return value;
     }
+
+    createEmpty(): T[] {
+        return [];
+    }
 }
 
 export const PArray = <T>(elementStrategy: PropertyStrategy<T>)=>new ArrayStrategy(elementStrategy); 

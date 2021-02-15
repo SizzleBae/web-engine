@@ -7,7 +7,7 @@ export class StrategyExtensions<TExtension> {
         this.extensionMap.set(strategyType, extension);
     }
     
-    get<T>(strategyType: new(...args:any[])=>PropertyStrategy<T>): TExtension | undefined {
-       return this.extensionMap.get(strategyType); 
+    get<T>(strategy: PropertyStrategy<T>): TExtension | undefined {
+       return this.extensionMap.get(strategy.constructor as any); 
     }
 }

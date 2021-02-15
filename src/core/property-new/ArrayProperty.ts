@@ -9,7 +9,7 @@ export class ArrayProperty<T> extends AbstractProperty<ArrayPropertyMemento> {
 
     readonly onChanged = new EventDelegate<[array: T[]]>();
 
-    constructor(private strategy: PropertyStrategy<T>, private value: T[]) {
+    constructor(public strategy: PropertyStrategy<T>, private value: T[]) {
         super();
     }
 
@@ -23,8 +23,18 @@ export class ArrayProperty<T> extends AbstractProperty<ArrayPropertyMemento> {
         return this.value[index];
     }
     
+    raw(): T[] {
+        return this.value;
+    }
+    
     push(...items: T[]) {
         this.value.push(...items);
+        
+        this.onChanged.emit(this.value);
+    }
+    
+    remove(index: number) {
+        this.value.splice(index, 1);
         
         this.onChanged.emit(this.value);
     }

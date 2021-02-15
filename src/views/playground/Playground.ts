@@ -1,29 +1,29 @@
-import {TwoWayProperty} from "../../core/property-new/extension/TwoWayProperty";
-import {TwoWayStrategy} from "../../core/property-new/extension/TwoWayStrategy";
 import {Property} from "../../core/property-new/Property";
 import {PString} from "../../core/property-new/strategy/StringStrategy";
-import {PNumber} from "../../core/property-new/strategy/NumberStrategy";
+import {ArrayProperty} from "../../core/property-new/ArrayProperty";
+import {TwoWayPropertyBuilder} from "../../core/property-new/extension/two-way/TwoWayPropertyBuilder";
+import {TwoWayStrategyBuilders} from "../../core/property-new/extension/two-way/TwoWayStrategyBuilders";
 
 export class Playground {
-
     initialize() {
-        const twoWayStrategy = new TwoWayStrategy().addDefaultBuilders();
-        const twoWayProperty = new TwoWayProperty(twoWayStrategy);
+        const twoWayStrategy = new TwoWayStrategyBuilders().addDefaultBuilders();
+        const twoWayProperty = new TwoWayPropertyBuilder(twoWayStrategy);
         
-        const testString = new Property(PString(), "");
-        const testNumber = new Property(PNumber(), 124);
+        const testString = new Property(PString(), "ASD");
+        
+        const testStringArray = new ArrayProperty(PString(), ["I", "AM", "INEVITABLE"]);
 
-        const testNumberTwoWay = twoWayProperty.buildFor(testNumber);
         const testStringTwoWay = twoWayProperty.buildFor(testString);
-        console.log(testNumberTwoWay, testStringTwoWay);
-        if(testStringTwoWay && testNumberTwoWay) {
-            document.body.appendChild(testStringTwoWay);
-            document.body.appendChild(testNumberTwoWay);
-        }
+        document.body.appendChild(testStringTwoWay.root);
+
+        const testStringArrayTwoWay = twoWayProperty.buildFor(testStringArray);
+        document.body.appendChild(testStringArrayTwoWay.root);
         
-        testString.set("HAHAHAH");
-        
-        setTimeout(()=>testString.set(testString.get() + " NANI!"), 3000);
+        setTimeout(()=> {
+            testString.set(testString.get() + " NANI!");
+            testStringArray.push("NANI!");
+        }, 3000);
+
     }
 
     render() {

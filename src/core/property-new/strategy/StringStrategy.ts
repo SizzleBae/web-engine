@@ -12,6 +12,10 @@ export class StringStrategy extends PropertyStrategy<string, string> {
     serialize(value: string, keepExternal: boolean, lookup: Map<object, string>): string {
         return value;
     }
+
+    createEmpty(): string {
+        return "";
+    }
 }
 
 export const PString = ()=>new StringStrategy();

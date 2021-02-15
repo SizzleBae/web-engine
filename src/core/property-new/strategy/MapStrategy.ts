@@ -28,6 +28,10 @@ export class MapStrategy<TKey, TValue> extends PropertyStrategy<Map<TKey, TValue
     modify(value: Map<TKey, TValue>): Map<TKey, TValue> {
         return value;
     }
+
+    createEmpty(): Map<TKey, TValue> {
+        return new Map();
+    }
 }
 
 export const PMap = <TKey, TValue>(keyStrategy: PropertyStrategy<TKey>, valueStrategy: PropertyStrategy<TValue>)=>new MapStrategy(keyStrategy, valueStrategy);

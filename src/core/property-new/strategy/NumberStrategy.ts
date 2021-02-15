@@ -22,6 +22,10 @@ export class NumberStrategy extends PropertyStrategy<number, number> {
         }
         return value;
     }
+
+    createEmpty(): number {
+        return 0;
+    }
 }
 
 export const PNumber = ()=>new NumberStrategy();

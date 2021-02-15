@@ -13,6 +13,10 @@ export class BooleanStrategy extends PropertyStrategy<boolean, boolean> {
     modify(value: boolean): boolean {
         return value;
     }
+
+    createEmpty(): boolean {
+        return false;
+    }
 }
 
 export const PBoolean = ()=>new BooleanStrategy();

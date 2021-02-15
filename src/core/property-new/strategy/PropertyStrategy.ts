@@ -3,4 +3,6 @@
     
     abstract serialize(value: TValue, keepExternal: boolean, lookup: Map<object, string>): TValueMemento;
     abstract deserialize(memento: TValueMemento, lookup: Map<string, object>): TValue;
+    
+    abstract createEmpty(): TValue;
 }

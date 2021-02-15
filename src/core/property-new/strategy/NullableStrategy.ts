@@ -35,6 +35,10 @@ export class NullableStrategy<T> extends PropertyStrategy<Nullable<T>, Nullable<
         }
         return null;
     }
+
+    createEmpty(): Nullable<T> {
+        return null;
+    }
 }
 
 export const PNullable = <T>(wrappedStrategy: PropertyStrategy<T>)=>new NullableStrategy(wrappedStrategy);

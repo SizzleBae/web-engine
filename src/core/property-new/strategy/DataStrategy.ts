@@ -48,6 +48,10 @@ export class DataStrategy<T extends object> extends PropertyStrategy<T, PDataMem
     modify(value: T): T {
         return value;
     }
+
+    createEmpty(): T {
+        throw new ReferenceError("Can not create an empty data object.");
+    }
 }
 
 export const PData = <T extends object = never>()=>new DataStrategy<T>();

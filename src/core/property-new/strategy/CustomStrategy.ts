@@ -22,4 +22,8 @@ export class VectorStrategy extends PropertyStrategy<Vector, VectorMemento> {
     modify(value: Vector): Vector {
         return value;
     }
+
+    createEmpty(): Vector {
+        return new Vector();
+    }
 }
