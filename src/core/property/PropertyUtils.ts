@@ -1,4 +1,4 @@
-import {AbstractProperty} from "../property-new/AbstractProperty";
+﻿import {AbstractProperty} from "./AbstractProperty";
 
 export class PropertyUtils {
     static forEachPropertyIn(propertyOwner: object, action: (property: AbstractProperty, key: string) => void): void {

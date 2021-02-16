@@ -1,11 +1,11 @@
 import { SerializeUtils } from "./SerializeUtils";
 import { Serializable } from "./Serializable";
-import { Property } from "../property-new/Property";
-import {PNumber} from "../property-new/strategy/NumberStrategy";
-import {PData} from "../property-new/strategy/DataStrategy";
-import {PRef} from "../property-new/strategy/ReferenceStrategy";
-import {PNullable} from "../property-new/strategy/NullableStrategy";
-import {ArrayProperty} from "../property-new/ArrayProperty";
+import { Property } from "../property/Property";
+import {PNumber} from "../property/strategy/NumberStrategy";
+import {PData} from "../property/strategy/DataStrategy";
+import {PRef} from "../property/strategy/ReferenceStrategy";
+import {PNullable} from "../property/strategy/NullableStrategy";
+import {ArrayProperty} from "../property/ArrayProperty";
 
 describe('SerializeUtils', () => {
 

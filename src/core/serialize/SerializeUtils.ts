@@ -1,9 +1,10 @@
 import { META_SERIALIZABLE_ID_KEY } from "./Serializable";
 import { SerializableConstructorMap } from "./SerializableConstructorMap";
-import { PropertyUtils } from "../property/PropertyUtils";
-import uuidv1 from 'uuid/v1'
 import { SerializedObject } from "./SerializedObject";
-import {AbstractProperty} from "../property-new/AbstractProperty";
+import {AbstractProperty} from "../property/AbstractProperty";
+import {PropertyUtils} from "../property/PropertyUtils";
+
+import uuidv1 from 'uuid/v1'
 
 type SerializedObjects = Record<string, SerializedObject>;
 

@@ -1,20 +1,42 @@
-import { DynamicProperty } from "./DynamicProperty";
-import { PStrategyData } from "./PStrategy";
-import { Serializable } from "../serialize/Serializable";
+﻿import {PropertyStrategy} from "./strategy/PropertyStrategy";
+import {EventDelegate} from "../event/EventDelegate";
+import {AbstractProperty} from "./AbstractProperty";
+import {PropertyVisitor} from "./extension/PropertyVisitor";
 
-@Serializable('core.property.Property')
-export class Property<T> extends DynamicProperty<T> {
+type PropertyMemento = any;
 
-    memento(keepExternal?: boolean | undefined, lookup?: Map<object, string> | undefined): SinglePropertyMemento {
-        return { data: this.strategy<T>().memento(this.value, keepExternal, lookup) };
+export class Property<T> extends AbstractProperty<PropertyMemento>{
+
+    readonly onChanged = new EventDelegate<[newValue: T, oldValue: T]>();
+
+    private value: T;
+    
+    constructor(public strategy: PropertyStrategy<T>, value: T) {
+        super();
+        
+        this.value = value;
+    }
+    
+    set(value: T) {
+        const oldValue = this.value;
+        this.value = this.strategy.modify(value);
+        
+        this.onChanged.emit(this.value, oldValue);
+    }
+    
+    get() {
+        return this.value;
+    }
+    
+    memento(keepExternal: boolean = false, lookup: Map<object, string> = new Map()): PropertyMemento {
+        return this.strategy.serialize(this.value, keepExternal, lookup);
     }
 
-    restore(memento: SinglePropertyMemento, lookup?: Map<string, object> | undefined): void {
-        this.value = this.strategy<T>().restore(memento.data, lookup);
+    restore(memento: PropertyMemento, lookup: Map<string, object> = new Map()): void {
+        this.value = this.strategy.deserialize(memento, lookup);
     }
 
-}
-
-export type SinglePropertyMemento = {
-    data: PStrategyData;
+    accept(visitor: PropertyVisitor): void {
+        visitor.visitProperty(this);
+    }
 }

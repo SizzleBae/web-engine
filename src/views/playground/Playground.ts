@@ -1,11 +1,11 @@
-import {Property} from "../../core/property-new/Property";
-import {PString} from "../../core/property-new/strategy/StringStrategy";
-import {ArrayProperty} from "../../core/property-new/ArrayProperty";
-import {TwoWayPropertyBuilder} from "../../core/property-new/extension/two-way/TwoWayPropertyBuilder";
-import {TwoWayStrategyBuilders} from "../../core/property-new/extension/two-way/TwoWayStrategyBuilders";
-import {PVector, Vector, VectorStrategy} from "../../core/property-new/strategy/CustomStrategy";
-import {TwoWayVectorStrategy} from "../../core/property-new/extension/two-way/TwoWayVectorStrategy";
-import {MapProperty} from "../../core/property-new/MapProperty";
+import {Property} from "../../core/property/Property";
+import {PString} from "../../core/property/strategy/StringStrategy";
+import {ArrayProperty} from "../../core/property/ArrayProperty";
+import {TwoWayPropertyBuilder} from "../../core/property/extension/two-way/TwoWayPropertyBuilder";
+import {TwoWayStrategyBuilders} from "../../core/property/extension/two-way/TwoWayStrategyBuilders";
+import {PVector, Vector, VectorStrategy} from "../../core/property/strategy/CustomStrategy";
+import {TwoWayVectorStrategy} from "../../core/property/extension/two-way/TwoWayVectorStrategy";
+import {MapProperty} from "../../core/property/MapProperty";
 
 export class Playground {
     initialize() {
@@ -19,7 +19,6 @@ export class Playground {
 
         const testStringArray = new ArrayProperty(PString(), ["I", "AM", "INEVITABLE"]);
         const testStringArrayTwoWay = twoWayProperty.buildFor(testStringArray);
-        document.body.appendChild(testStringArrayTwoWay.root);
 
         const testVectorArray = new ArrayProperty(PVector(), [new Vector(1, 3), new Vector(3, 7)]);
         const testVectorArrayTwoWay = twoWayProperty.buildFor(testVectorArray);

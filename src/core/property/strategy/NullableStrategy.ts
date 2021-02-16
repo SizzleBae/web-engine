@@ -12,7 +12,7 @@ export class NullableStrategy<T> extends PropertyStrategy<Nullable<T>, Nullable<
             try {
                 return this.wrappedStrategy.serialize(value, keepExternal, lookup);
             } catch (e) {
-                console.warn(e);
+                console.log("NullableStrategy: Failed to serialize, will serialize null instead.");
             }
         }
         return null;
@@ -23,7 +23,7 @@ export class NullableStrategy<T> extends PropertyStrategy<Nullable<T>, Nullable<
             try {
                 return this.wrappedStrategy.deserialize(memento, lookup);
             } catch (e) {
-                console.warn(e);
+                console.log("NullableStrategy: Failed to deserialize, will deserialize as null instead.");
             }
         }
         return null;

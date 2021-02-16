@@ -1,45 +1,39 @@
-import { ArrayCompositeComponent } from "./ArrayCompositeComponent";
-import { IDComponent } from "./IDComponent";
-import { TransformComponent } from "./TransformComponent";
+import {Component} from "./Component";
+
+class TestComponent extends Component {
+}
 
 describe("Component", () => {
-    it("can find child components", () => {
-        const compositeComponent = new ArrayCompositeComponent();
+    // Create a test tree of components
+    const root = new TestComponent();
+    const child1 = new TestComponent();
+    child1.parent.set(root);
+    const child2 = new TestComponent();
+    child2.parent.set(root);
+    const descendant1 = new TestComponent();
+    descendant1.parent.set(child2);
+    const descendant2 = new TestComponent();
+    descendant2.parent.set(child2);
+    const child3 = new TestComponent();
+    // Set parent twice to make sure that state is properly maintained when changing parent
+    child3.parent.set(descendant2);
+    child3.parent.set(root);
+    
+    it("can create an ancestor iterator", () => {
+        const ancestors = Array.from(descendant2.ancestors());
+        expect(ancestors).toEqual(expect.arrayContaining([child2, root]));
+        expect(ancestors.length).toBe(2);
+    })
 
-        const idComponent = new IDComponent("iasdiaisdf");
-        const transformComponent = new TransformComponent();
+    it("can create a descendants iterator", () => {
+        const descendants = Array.from(root.descendants());
+        expect(descendants).toEqual(expect.arrayContaining([child1, child2, child3, descendant1, descendant2]));
+        expect(descendants.length).toBe(5);
+    })
 
-        compositeComponent.add(idComponent);
-        compositeComponent.add(transformComponent);
-
-        expect(compositeComponent.findChildComponent(TransformComponent)).toBe(transformComponent);
-
-        compositeComponent.remove(transformComponent);
-
-        expect(compositeComponent.findChildComponent(TransformComponent)).toBeUndefined();
-
-        expect(() => idComponent.findChildComponent(IDComponent)).toThrow();
-    });
-
-    it("can traverse ancestors", () => {
-        const compositeComponent = new ArrayCompositeComponent();
-        const compositeComponent1 = new ArrayCompositeComponent();
-        const compositeComponent2 = new ArrayCompositeComponent();
-        const idComponent = new IDComponent();
-
-        compositeComponent.add(compositeComponent1);
-        compositeComponent1.add(compositeComponent2);
-        compositeComponent2.add(idComponent);
-
-        let traverseCount = 0;
-        idComponent.traverseAncestors(() => traverseCount++);
-        expect(traverseCount).toBe(4);
-
-        compositeComponent.add(idComponent);
-
-        traverseCount = 0;
-        idComponent.traverseAncestors(() => traverseCount++);
-        expect(traverseCount).toBe(2);
-
-    });
+    it("can create a siblings iterator", () => {
+        const descendants = Array.from(child2.siblings());
+        expect(descendants).toEqual(expect.arrayContaining([child1, child3]));
+        expect(descendants.length).toBe(2);
+    })
 });

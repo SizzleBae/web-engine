@@ -1,55 +1,57 @@
-import { DynamicProperty, PType } from "./DynamicProperty";
-import { PStrategyData } from "./PStrategy";
-import { PropertyMemento } from "./PropertyMemento";
-import { EventDelegate } from "../event/EventDelegate";
-import { Serializable } from "../serialize/Serializable";
+﻿import {PropertyStrategy} from "./strategy/PropertyStrategy";
+import {EventDelegate} from "../event/EventDelegate";
+import {AbstractProperty} from "./AbstractProperty";
+import {PropertyVisitor} from "./extension/PropertyVisitor";
 
-@Serializable('core.property.ArrayProperty')
-export class ArrayProperty<T> extends DynamicProperty<T[]> {
+type ArrayPropertyMemento = any[];
 
-    readonly onArrayChanged = new EventDelegate<void>();
+export class ArrayProperty<T> extends AbstractProperty<ArrayPropertyMemento> {
 
-    constructor(strategyType: PType, value: T[]) {
-        super(strategyType, value);
+    readonly onChanged = new EventDelegate<[array: T[]]>();
 
-        this.onChanged.subscribe(data => this.onArrayChanged.emit());
+    constructor(public strategy: PropertyStrategy<T>, private value: T[]) {
+        super();
     }
 
-    memento(keepExternal?: boolean, lookup?: Map<object, string>): ArrayPropertyMemento {
-
-        const strategy = this.strategy<T>();
-        const array: PStrategyData[] = [];
-        this.value.forEach(element => {
-            array.push(strategy.memento(element, keepExternal, lookup));
-        });
-
-        return { array };
+    set(index: number, value: T) {
+        this.value[index] = this.strategy.modify(value);
+        
+        this.onChanged.emit(this.value);
     }
 
-    restore(memento: ArrayPropertyMemento, lookup?: Map<string, object>): void {
-
-        const strategy = this.strategy<T>();
-
-        const array: T[] = [];
-        memento.array.forEach(data => {
-            // TODO: Handle undefined?
-            array.push(strategy.restore(data, lookup) as T);
-        })
-
-        this.value = array;
+    get(index: number): T {
+        return this.value[index];
+    }
+    
+    raw(): T[] {
+        return this.value;
+    }
+    
+    push(...items: T[]) {
+        this.value.push(...items);
+        
+        this.onChanged.emit(this.value);
+    }
+    
+    remove(index: number) {
+        this.value.splice(index, 1);
+        
+        this.onChanged.emit(this.value);
+    }
+    
+    [Symbol.iterator]() {
+        return this.value[Symbol.iterator];
     }
 
-    replace(index: number, newElement: T): void {
-        if (this.value) {
-            this.value[index] = newElement;
-
-            this.onArrayChanged.emit();
-        } else {
-            throw new Error(`Attempted to set element in array property when array is undefined!`);
-        }
+    memento(keepExternal: boolean = false, lookup: Map<object, string> = new Map()): ArrayPropertyMemento {
+        return this.value.map(element => this.strategy.serialize(element, keepExternal, lookup));
     }
-}
 
-export type ArrayPropertyMemento = {
-    array: PStrategyData[]
+    restore(memento: ArrayPropertyMemento, lookup: Map<string, object> = new Map()): void {
+        this.value = memento.map(element => this.strategy.deserialize(element, lookup));
+    }
+
+    accept(visitor: PropertyVisitor): void {
+        visitor.visitArrayProperty(this);
+    }
 }

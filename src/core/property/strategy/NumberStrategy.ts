@@ -28,4 +28,4 @@ export class NumberStrategy extends PropertyStrategy<number, number> {
     }
 }
 
-export const PNumber = ()=>new NumberStrategy();
+export const PNumber = (max?: number, min?: number)=>new NumberStrategy(max, min);

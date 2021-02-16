@@ -1,62 +1,102 @@
 import { EventDelegate } from "../event/EventDelegate";
 import { Property } from "../property/Property";
-import { PType } from "../property/DynamicProperty";
+import {PNullable} from "../property/strategy/NullableStrategy";
+import {PRef} from "../property/strategy/ReferenceStrategy";
 
-/** Workaround for babel transpiling not accepting an iterator of self in Component class */
-abstract class IterableComponent {
-	abstract [Symbol.iterator](): Iterator<Component>
-}
-
-export abstract class Component extends IterableComponent {
+export abstract class Component {
+	
 	/**
-	 * Parent of this component, used for efficiency purposes
+	 * Parent of this component, change this to safely update component tree
 	 */
-	public readonly parent = new Property<Component | null>(PType.Reference, null);
+	readonly parent = new Property(PNullable(PRef<Component>()), null);
 
 	/**
-	 * Fired when this component is added to another component.
+	 * An array containing the children of this component, used for optimization purposes
+	 * @private
 	 */
-	public readonly onComponentAdded = new EventDelegate<{ newParent: Component }>();
+	private childrenArray: Component[] = [];
+	
+	private root: Component = this;
+	
+	readonly onDescendantAdded = new EventDelegate<[added: Component]>();
+	readonly onDescendantRemoved = new EventDelegate<[removed: Component]>();
+	readonly onChildAdded = new EventDelegate<[added: Component]>();
+	readonly onChildRemoved = new EventDelegate<[removed: Component]>();
+	readonly onRootChanged = new EventDelegate<[newRoot: Component, oldRoot: Component]>();
 
-	/**
-	 * Fired when this component is removed from another component.
-	 */
-	public readonly onComponentRemoved = new EventDelegate<{ oldParent: Component }>();
+	constructor() {
+		this.parent.onChanged.subscribe((newParent, oldParent) => {
+			if(oldParent) {
+				oldParent.childrenArray.splice(oldParent.childrenArray.indexOf(this));
 
-	/**
-	 * Adds a component to this component's composition
-	 * @param component The component to add
-	 */
-	public abstract add(component: Component): void;
+				// Notify that a component has been removed
+				oldParent.onChildRemoved.emit(this);
+				for(const ancestor of oldParent.ancestors()) {
+					ancestor.onDescendantRemoved.emit(this);
+				}
+			}
+			if(newParent) {
+				newParent.childrenArray.push(this);
+				this.setRoot(newParent.root);
 
+				// Notify that a component has been added
+				newParent.onChildAdded.emit(this);
+				for(const ancestor of newParent.ancestors()) {
+					ancestor.onDescendantAdded.emit(this);
+				}
+			} else {
+				this.setRoot(this);
+			}
+		})
+	}
 
-	/**
-	 * Removes component from this component's composition
-	 * @param component The component to remove
-	 */
-	public abstract remove(component: Component): void;
+	*ancestors(): Generator<Component> {
+		const parent = this.parent.get();
+		if(parent) {
+			yield parent;
+			yield * parent.ancestors();
+		}
+	}
+	
+	*descendants(): Generator<Component> {
+		for(const child of this.children()) {
+			yield child;
+			yield * child.descendants();
+		}
+	}
 
-	/**
-	 * Searches through children of this component. Returns the first child that matches type, if no child component matches type, returns undefined.
-	 * @param type The class type of the component to search for
-	 */
-	public findChildComponent<T extends Component>(type: { new(...args: any[]): T }): T | undefined {
-		for (const child of this) {
-			if (child instanceof type) {
-				return child;
+	*children(): Generator<Component> {
+		for(const child of this.childrenArray) {
+			yield child;
+		}
+	}
+
+	*siblings(): Generator<Component> {
+		const parent = this.parent.get();
+
+		if(parent) {
+			for(const sibling of parent.children()) {
+				if(sibling !== this) {
+					yield sibling;
+				}
 			}
 		}
-		return undefined;
+	}
+	
+	getRoot() {
+		return this.root;
 	}
 
 	/**
-	 * Executes callback for this component and all ancestors
-	 * @param callback The function to execute
+	 * Recursively updates root for this component and descendants.
+	 * @param newRoot
+	 * @private
 	 */
-	public traverseAncestors(callback: (ancestor?: Component) => void) {
-		callback(this);
-
-		this.parent.get()?.traverseAncestors(callback);
+	private setRoot(newRoot: Component) {
+		const oldRoot = this.root;
+		for(const descendant of this.descendants()) {
+			descendant.root = newRoot
+			descendant.onRootChanged.emit(newRoot, oldRoot);
+		}
 	}
-
 }
