@@ -4,31 +4,57 @@ import {TwoWayStrategy} from "./TwoWayStrategy";
 import {MapProperty} from "../../MapProperty";
 
 export class TwoWayMapProperty extends TwoWayProperty {
-    private twoWayEntries: { key: TwoWayStrategy<any>, value: TwoWayStrategy<any> }[] = [];
+    private twoWayMap = new Map<any, { key: TwoWayStrategy<any>, value: TwoWayStrategy<any> }>();
     
     private propertyChangeListener = ()=>this.refreshTwoWayMap();
+    
+    private mapContainer = document.createElement('div');
     
     constructor(private property: MapProperty<any, any>, private strategyBuilders: TwoWayStrategyBuilders) {
         super(document.createElement('div'));
 
         property.onChanged.subscribe(this.propertyChangeListener);
         
+        this.root.appendChild(this.mapContainer);
+        
+        // Create add entry button
+        const addButton = document.createElement('button');
+        addButton.innerHTML = '+';
+        addButton.addEventListener('click', () => {
+            const emptyKey = this.property.keyStrategy.createEmpty();
+            const emptyValue = this.property.valueStrategy.createEmpty();
+            this.property.set(emptyKey, emptyValue);
+        });
+        this.root.appendChild(addButton);
+        
         this.refreshTwoWayMap();
     }
     
-    private destroyTwoWayEntries() {
-        this.twoWayEntries.forEach((entry) => {
-            entry.key.destroy();
-            entry.value.destroy();
-        });
+    private destroyRemovedEntries() {
+        const removedKeys: any[] = [];
         
-        this.twoWayEntries = [];
+        for(const key of this.twoWayMap.keys()) {
+            if(!this.property.has(key)) {
+                removedKeys.push(key);
+            }
+        }
+        
+        removedKeys.forEach(key => {
+            const twoWayEntry = this.twoWayMap.get(key);
+            
+            if(twoWayEntry) {
+                this.twoWayMap.delete(key);
+
+                // Remove entry container
+                twoWayEntry.key.root.parentElement?.remove();
+
+                twoWayEntry.key.destroy();
+                twoWayEntry.value.destroy();
+            }
+        })
     }
     
-    private refreshTwoWayMap() {
-        this.root.innerHTML = '';
-        this.destroyTwoWayEntries();
-        
+    private createNewEntries() {
         const KeyStrategyTwoWay = this.strategyBuilders.builders.get(this.property.keyStrategy);
         if (!KeyStrategyTwoWay) {
             throw new Error("Missing key two way strategy.");
@@ -40,44 +66,56 @@ export class TwoWayMapProperty extends TwoWayProperty {
         }
         
         for(const [key, value] of this.property) {
-            const keyTwoWay = new KeyStrategyTwoWay();
-            const valueTwoWay = new ValueStrategyTwoWay();
-            
-            keyTwoWay.onProgramValue(key);
-            valueTwoWay.onProgramValue(value);
-            
-            keyTwoWay.onHTMLValue.subscribe(newKey => {
-                this.property.raw().delete(key);
-                this.property.set(newKey, value);
-            })
-            
-            valueTwoWay.onHTMLValue.subscribe(newValue => {
-                this.property.set(key, newValue);
-            })
+            if(!this.twoWayMap.has(key)) {
+                const keyTwoWay = new KeyStrategyTwoWay();
+                const valueTwoWay = new ValueStrategyTwoWay();
+                
+                this.twoWayMap.set(key, {key: keyTwoWay, value: valueTwoWay});
 
-            const removeButton = document.createElement('button');
-            removeButton.innerHTML = 'X';
-            removeButton.onclick = e => this.property.delete(key);
+                keyTwoWay.onHTMLValue.subscribe(newKey => {
+                    this.property.raw().delete(key);
+                    this.property.set(newKey, value);
+                })
 
-            const entryContainer = document.createElement("div");
-            entryContainer.appendChild(keyTwoWay.root);
-            entryContainer.appendChild(valueTwoWay.root);
-            entryContainer.appendChild(removeButton);
-            this.root.appendChild(entryContainer);
+                valueTwoWay.onHTMLValue.subscribe(newValue => {
+                    this.property.set(key, newValue);
+                })
+
+                const removeButton = document.createElement('button');
+                removeButton.innerHTML = 'X';
+                removeButton.onclick = e => this.property.delete(key);
+
+                const entryContainer = document.createElement("div");
+                entryContainer.appendChild(keyTwoWay.root);
+                entryContainer.appendChild(valueTwoWay.root);
+                entryContainer.appendChild(removeButton);
+                this.mapContainer.appendChild(entryContainer);
+            }
         }
-
-        const addButton = document.createElement('button');
-        addButton.innerHTML = '+';
-        addButton.addEventListener('click', () => {
-            const emptyKey = this.property.keyStrategy.createEmpty();
-            const emptyValue = this.property.valueStrategy.createEmpty();
-            this.property.set(emptyKey, emptyValue);
-        });
-        this.root.appendChild(addButton);
+    }
+    
+    private updateHTMLValues() {
+        for(const [key, value] of this.property) {
+            const twoWay = this.twoWayMap.get(key);
+            if(twoWay) {
+                twoWay.key.onProgramValue(key);
+                twoWay.value.onProgramValue(value);
+            }
+        }
+    }
+    
+    private refreshTwoWayMap() {
+        this.destroyRemovedEntries();
+        this.createNewEntries();
+        this.updateHTMLValues();
     }
     
     protected onDestroy(): void {
-        this.destroyTwoWayEntries();
+        this.twoWayMap.forEach(entry => {
+            entry.value.destroy();
+            entry.key.destroy();
+        })
+        
         this.property.onChanged.unsubscribe(this.propertyChangeListener);
     }
 }

@@ -1,7 +1,7 @@
 import { SerializableConstructorMap } from "./SerializableConstructorMap";
 import { Serializable, META_SERIALIZABLE_ID_KEY } from "./Serializable";
 
-describe("PropertOwnerConstructorMap", () => {
+describe("PropertyOwnerConstructorMap", () => {
     it("registers constructors", () => {
         @Serializable('test.RegisterTest')
         class RegisterTest {

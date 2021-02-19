@@ -3,7 +3,7 @@
     }
     
     destroy() {
-        this.root.parentElement?.removeChild(this.root);
+        this.root.remove();
         this.onDestroy();
     }
     

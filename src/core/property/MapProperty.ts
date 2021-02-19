@@ -9,40 +9,44 @@ export class MapProperty<TKey, TValue> extends AbstractProperty<MapPropertyMemen
 
     readonly onChanged = new EventDelegate<[]>();
 
-    private value = new Map<TKey, TValue>();
+    private map = new Map<TKey, TValue>();
     
     constructor(public keyStrategy: PropertyStrategy<TKey>, public valueStrategy: PropertyStrategy<TValue>) {
         super();
     }
 
     set(key: TKey, value: TValue) {
-        this.value.set(this.keyStrategy.modify(key), this.valueStrategy.modify(value));
+        this.map.set(this.keyStrategy.modify(key), this.valueStrategy.modify(value));
         
         this.onChanged.emit();
     }
 
     get(key: TKey): TValue | undefined {
-        return this.value.get(key);
+        return this.map.get(key);
+    }
+    
+    has(key: TKey): boolean {
+        return this.map.has(key);
     }
     
     raw(): Map<TKey, TValue> {
-        return this.value;
+        return this.map;
     }
     
     delete(key: TKey) {
-        this.value.delete(key);
+        this.map.delete(key);
         
         this.onChanged.emit();
     }
     
     [Symbol.iterator]() {
-        return this.value[Symbol.iterator]();
+        return this.map[Symbol.iterator]();
     }
 
     memento(keepExternal: boolean = false, lookup: Map<object, string> = new Map()): MapPropertyMemento {
         const memento: MapPropertyMemento = [];
         
-        for(const [key, value] of this.value.entries()) {
+        for(const [key, value] of this.map.entries()) {
             memento.push([
                 this.keyStrategy.serialize(key, keepExternal, lookup), 
                 this.valueStrategy.serialize(value, keepExternal, lookup)
@@ -58,7 +62,7 @@ export class MapProperty<TKey, TValue> extends AbstractProperty<MapPropertyMemen
             this.valueStrategy.deserialize(entryMemento[1], lookup)
         ]);
         
-        this.value = new Map<TKey, TValue>(deserializedEntries); 
+        this.map = new Map<TKey, TValue>(deserializedEntries); 
     }
 
     accept(visitor: PropertyVisitor): void {

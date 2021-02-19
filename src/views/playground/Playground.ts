@@ -6,6 +6,7 @@ import {TwoWayStrategyBuilders} from "../../core/property/extension/two-way/TwoW
 import {PVector, Vector, VectorStrategy} from "../../core/property/strategy/CustomStrategy";
 import {TwoWayVectorStrategy} from "../../core/property/extension/two-way/TwoWayVectorStrategy";
 import {MapProperty} from "../../core/property/MapProperty";
+import {PBoolean} from "../../core/property/strategy/BooleanStrategy";
 
 export class Playground {
     initialize() {
@@ -17,6 +18,10 @@ export class Playground {
         const testStringTwoWay = twoWayProperty.buildFor(testString);
         document.body.appendChild(testStringTwoWay.root);
 
+        const testBoolean = new Property(PBoolean(), true);
+        const testBooleanTwoWay = twoWayProperty.buildFor(testBoolean);
+        document.body.appendChild(testBooleanTwoWay.root);
+        
         const testStringArray = new ArrayProperty(PString(), ["I", "AM", "INEVITABLE"]);
         const testStringArrayTwoWay = twoWayProperty.buildFor(testStringArray);
 
@@ -32,6 +37,7 @@ export class Playground {
         
         setTimeout(()=> {
             testString.set(testString.get() + " NANI!");
+            testBoolean.set(!testBoolean.get());
             testStringArray.push("NANI!");
             testVectorArray.set(1, new Vector(4, 5));
             testStringVectorMap.set("MM", new Vector(0, 2));

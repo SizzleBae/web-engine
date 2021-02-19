@@ -8,6 +8,8 @@ export class TwoWayArrayProperty extends TwoWayProperty {
     
     private propertyChangeListener = ()=>this.refreshTwoWayArray();
     
+    private arrayContainer = document.createElement('div');
+    
     constructor(private property: ArrayProperty<any>, private strategyBuilders: TwoWayStrategyBuilders) {
         super(document.createElement('div'));
 
@@ -16,55 +18,60 @@ export class TwoWayArrayProperty extends TwoWayProperty {
         // Handle remove button click event, do this at parent to prevent creating large amounts of handlers per button
         this.root.onclick = e => {
             if(e.target instanceof HTMLButtonElement) {
-                const removeIndex = e.target.getAttribute("data-remove");
-                if(removeIndex !== null) {
-                    this.property.remove(Number.parseInt(removeIndex));
+                const remove = e.target.getAttribute("data-remove");
+                if(remove !== null) {
+                    this.property.remove(Number.parseInt(remove));
                 }
             }
         };
         
+        this.root.appendChild(this.arrayContainer);
+
+        // Create add element button
+        const addButton = document.createElement('button');
+        addButton.innerHTML = '+';
+        addButton.addEventListener('click', () => this.property.push(this.property.strategy.createEmpty()));
+        this.root.appendChild(addButton);
         
         this.refreshTwoWayArray();
     }
     
     private refreshTwoWayArray() {
-        this.twoWayArray.forEach(twoWay => twoWay.destroy());
-        
-        this.root.innerHTML = '';
+        // Destroy excess two way elements
+        this.twoWayArray.splice(this.property.length()).forEach(twoWay => {
+            twoWay.root.parentElement?.remove();
+            twoWay.destroy();
+        });
         
         const StrategyTwoWay = this.strategyBuilders.builders.get(this.property.strategy);
         if (!StrategyTwoWay) {
             throw new Error("Missing two way strategy.");
         }
-
-        this.twoWayArray = this.property.raw().map((element, index) => {
-            const elementTwoWay = new StrategyTwoWay();
-
-            elementTwoWay.onHTMLValue.subscribe(newValue => this.property.set(index, newValue));
-            elementTwoWay.onProgramValue(element);
-
-            return elementTwoWay;
-        });
         
-        this.twoWayArray.forEach((element, index) => {
+        // Create two way elements if necessary
+        for(let i = this.twoWayArray.length; i < this.property.length(); i++) {
+            // Create two way object
+            const twoWay = new StrategyTwoWay();
+
+            twoWay.onHTMLValue.subscribe(newValue => this.property.set(i, newValue));
             
+            this.twoWayArray.push(twoWay);
             
+            // Create container html
             const removeButton = document.createElement('button');
             removeButton.innerHTML = 'X';
-            
+
             // Store index in attribute to lookup for when it is pressed
-            removeButton.setAttribute("data-remove", index.toString());
+            removeButton.setAttribute("data-remove", i.toString());
 
             const elementContainer = document.createElement('div');
-            elementContainer.appendChild(element.root);
+            elementContainer.appendChild(twoWay.root);
             elementContainer.appendChild(removeButton);
-            this.root.appendChild(elementContainer);
-        });
-
-        const addButton = document.createElement('button');
-        addButton.innerHTML = '+';
-        addButton.addEventListener('click', () => this.property.push(this.property.strategy.createEmpty()));
-        this.root.appendChild(addButton);
+            this.arrayContainer.appendChild(elementContainer);
+        }
+        
+        // Update two way state to match property state
+        this.twoWayArray.forEach((twoWay, index) => twoWay.onProgramValue(this.property.get(index)));
     }
     
     protected onDestroy(): void {

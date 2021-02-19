@@ -33,7 +33,7 @@ describe("Component", () => {
 
     it("can create a siblings iterator", () => {
         const descendants = Array.from(child2.siblings());
-        expect(descendants).toEqual(expect.arrayContaining([child1, child3]));
+        expect(descendants).toEqual([child1, child3]);
         expect(descendants.length).toBe(2);
     })
 });

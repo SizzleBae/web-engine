@@ -10,6 +10,6 @@ export abstract class TwoWayStrategy<TStrategy, TRoot extends HTMLElement = HTML
 
     destroy() {
         this.onHTMLValue.clearListeners();
-        this.root.parentElement?.removeChild(this.root);
+        this.root.remove();
     }
 }
