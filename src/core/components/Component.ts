@@ -81,7 +81,7 @@ export abstract class Component {
 				}
 			}
 		}
-	}
+	}	
 	
 	getRoot() {
 		return this.root;

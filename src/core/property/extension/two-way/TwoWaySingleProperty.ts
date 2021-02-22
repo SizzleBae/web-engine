@@ -11,12 +11,7 @@ export class TwoWaySingleProperty extends TwoWayProperty {
     constructor(private property: Property<any>, private strategyBuilders: TwoWayStrategyBuilders) {
         super(document.createElement('div'));
 
-        const StrategyTwoWay = strategyBuilders.builders.get(property.strategy);
-        if (!StrategyTwoWay) {
-            throw new Error("Missing two way strategy.");
-        }
-        
-        this.strategyTwoWay = new StrategyTwoWay();
+        this.strategyTwoWay = strategyBuilders.build(property.strategy);
 
         this.strategyTwoWay.onHTMLValue.subscribe(newValue => property.set(newValue));
         this.property.onChanged.subscribe(this.propertyChangeListener);

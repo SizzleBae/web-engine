@@ -43,15 +43,10 @@ export class TwoWayArrayProperty extends TwoWayProperty {
             twoWay.destroy();
         });
         
-        const StrategyTwoWay = this.strategyBuilders.builders.get(this.property.strategy);
-        if (!StrategyTwoWay) {
-            throw new Error("Missing two way strategy.");
-        }
-        
         // Create two way elements if necessary
         for(let i = this.twoWayArray.length; i < this.property.length(); i++) {
             // Create two way object
-            const twoWay = new StrategyTwoWay();
+            const twoWay = this.strategyBuilders.build(this.property.strategy);
 
             twoWay.onHTMLValue.subscribe(newValue => this.property.set(i, newValue));
             

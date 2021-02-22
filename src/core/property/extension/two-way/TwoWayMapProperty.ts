@@ -54,21 +54,11 @@ export class TwoWayMapProperty extends TwoWayProperty {
         })
     }
     
-    private createNewEntries() {
-        const KeyStrategyTwoWay = this.strategyBuilders.builders.get(this.property.keyStrategy);
-        if (!KeyStrategyTwoWay) {
-            throw new Error("Missing key two way strategy.");
-        }
-
-        const ValueStrategyTwoWay = this.strategyBuilders.builders.get(this.property.valueStrategy);
-        if (!ValueStrategyTwoWay) {
-            throw new Error("Missing value two way strategy.");
-        }
-        
+    private createAddedEntries() {
         for(const [key, value] of this.property) {
             if(!this.twoWayMap.has(key)) {
-                const keyTwoWay = new KeyStrategyTwoWay();
-                const valueTwoWay = new ValueStrategyTwoWay();
+                const keyTwoWay = this.strategyBuilders.build(this.property.keyStrategy);
+                const valueTwoWay = this.strategyBuilders.build(this.property.valueStrategy);
                 
                 this.twoWayMap.set(key, {key: keyTwoWay, value: valueTwoWay});
 
@@ -106,7 +96,7 @@ export class TwoWayMapProperty extends TwoWayProperty {
     
     private refreshTwoWayMap() {
         this.destroyRemovedEntries();
-        this.createNewEntries();
+        this.createAddedEntries();
         this.updateHTMLValues();
     }
     

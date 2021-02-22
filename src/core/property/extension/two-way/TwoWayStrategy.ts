@@ -7,9 +7,12 @@ export abstract class TwoWayStrategy<TStrategy, TRoot extends HTMLElement = HTML
     }
 
     abstract onProgramValue(newValue: TStrategy): void;
+    abstract onDestroy(): void;
 
     destroy() {
         this.onHTMLValue.clearListeners();
         this.root.remove();
+        
+        this.onDestroy();
     }
 }

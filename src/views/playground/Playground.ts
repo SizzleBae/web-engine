@@ -11,7 +11,7 @@ import {PBoolean} from "../../core/property/strategy/BooleanStrategy";
 export class Playground {
     initialize() {
         const twoWayStrategy = new TwoWayStrategyBuilders().addDefaultBuilders();
-        twoWayStrategy.builders.set(VectorStrategy, TwoWayVectorStrategy);
+        twoWayStrategy.builders.set(VectorStrategy, ()=>new TwoWayVectorStrategy());
         const twoWayProperty = new TwoWayPropertyBuilder(twoWayStrategy);
         
         const testString = new Property(PString(), "ASD");

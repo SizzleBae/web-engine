@@ -1,9 +1,8 @@
 import {Component} from "./Component";
 
-class TestComponent extends Component {
-}
-
 describe("Component", () => {
+    class TestComponent extends Component { }
+
     // Create a test tree of components
     const root = new TestComponent();
     const child1 = new TestComponent();

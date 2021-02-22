@@ -10,4 +10,7 @@ export class TwoWayStringStrategy extends TwoWayStrategy<string, HTMLInputElemen
     onProgramValue(newValue: string): void {
         this.root.value = newValue;
     }
+
+    onDestroy(): void {
+    }
 }

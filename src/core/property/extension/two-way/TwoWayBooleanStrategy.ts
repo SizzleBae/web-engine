@@ -11,4 +11,7 @@ export class TwoWayBooleanStrategy extends TwoWayStrategy<boolean, HTMLInputElem
     onProgramValue(newValue: boolean): void {
         this.root.checked = newValue;
     }
+
+    onDestroy(): void {
+    }
 }

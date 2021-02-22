@@ -11,4 +11,7 @@ export class TwoWayNumberStrategy extends TwoWayStrategy<number, HTMLInputElemen
     onProgramValue(newValue: number): void {
         this.root.value = newValue.toString();
     }
+
+    onDestroy(): void {
+    }
 }

@@ -28,4 +28,7 @@ export class TwoWayVectorStrategy extends TwoWayStrategy<Vector, HTMLSpanElement
     private getHTMLVector(): Vector {
         return new Vector(Number.parseFloat(this.xInput.value), Number.parseFloat(this.yInput.value));
     }
+
+    onDestroy(): void {
+    }
 }
