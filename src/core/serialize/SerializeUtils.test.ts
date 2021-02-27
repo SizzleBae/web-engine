@@ -19,9 +19,9 @@ describe('SerializeUtils', () => {
     @Serializable('test.ObjectTest2')
     class ObjectTest2 {
         object1 = new Property(PData<ObjectTest>(), new ObjectTest());
-        object2 = new Property(PNullable(PRef<ObjectTest2>()), null);
-        array1 = new ArrayProperty(PNullable(PRef<ObjectTest2>()), []);
-        prop1 = new Property(PNullable(PRef<Property<ObjectTest>>()), null);
+        object2 = new Property(PNullable(PRef(ObjectTest2)), null);
+        array1 = new ArrayProperty(PNullable(PRef(ObjectTest2)), []);
+        prop1 = new Property(PNullable(PRef<Property<ObjectTest>>(Property)), null);
     }
 
     it('can serialize and deserialize objects', () => {

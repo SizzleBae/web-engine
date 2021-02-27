@@ -30,7 +30,7 @@ describe('Property', () => {
     it('can use references', ()=> {
         // Reference
         const originalReference = new ObjectTest();
-        const reference = new Property(PRef<ObjectTest>(), originalReference);
+        const reference = new Property(PRef(ObjectTest), originalReference);
         reference.get().number.set(69);
 
         const referenceMemento = reference.memento(true);
@@ -64,7 +64,7 @@ describe('Property', () => {
     it('can use nullable',()=>{
         // Nullable
         const obj = new ObjectTest();
-        const nullable = new Property(PNullable(PRef<ObjectTest>()), null);
+        const nullable = new Property(PNullable(PRef(ObjectTest)), null);
         const nullableMemento = nullable.memento();
         nullable.set(obj);
         expect(nullable.get()).toBe(obj);

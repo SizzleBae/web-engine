@@ -8,7 +8,7 @@ export abstract class Component {
 	/**
 	 * Parent of this component, change this to safely update component tree
 	 */
-	readonly parent = new Property(PNullable(PRef<Component>()), null);
+	readonly parent = new Property(PNullable(PRef(Component)), null);
 
 	/**
 	 * An array containing the children of this component, used for optimization purposes

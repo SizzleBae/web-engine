@@ -5,7 +5,14 @@ type PReferenceMemento = {
     object?: object
 }
 
+// We have to use | Function in order to allow for abstract classes that does not contain a concrete constructor
+export type Constructable<T> = {new(...args:any[]):T} | Function;
+
 export class ReferenceStrategy<T extends object> extends PropertyStrategy<T, PReferenceMemento> {
+    constructor(public type: Constructable<T>) {
+        super();
+    }
+    
     serialize(value: T, keepExternal: boolean, lookup: Map<object, string>): PReferenceMemento {
         const referenceID = lookup.get(value);
 
@@ -42,4 +49,4 @@ export class ReferenceStrategy<T extends object> extends PropertyStrategy<T, PRe
     }
 }
 
-export const PRef = <T extends object>()=>new ReferenceStrategy<T>();
+export const PRef = <T extends object>(type: Constructable<T>)=>new ReferenceStrategy<T>(type);

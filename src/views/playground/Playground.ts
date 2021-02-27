@@ -7,11 +7,20 @@ import {PVector, Vector, VectorStrategy} from "../../core/property/strategy/Cust
 import {TwoWayVectorStrategy} from "../../core/property/extension/two-way/TwoWayVectorStrategy";
 import {MapProperty} from "../../core/property/MapProperty";
 import {PBoolean} from "../../core/property/strategy/BooleanStrategy";
+import {PRef, ReferenceStrategy} from "../../core/property/strategy/ReferenceStrategy";
+import {TwoWayReferenceStrategy} from "../../core/property/extension/two-way/TwoWayReferenceStrategy";
+import {PNullable} from "../../core/property/strategy/NullableStrategy";
+
+class TestClass {
+    
+}
 
 export class Playground {
     initialize() {
-        const twoWayStrategy = new TwoWayStrategyBuilders().addDefaultBuilders();
-        twoWayStrategy.builders.set(VectorStrategy, ()=>new TwoWayVectorStrategy());
+        const twoWayStrategy = new TwoWayStrategyBuilders();
+        twoWayStrategy.add(VectorStrategy, ()=>new TwoWayVectorStrategy());
+        twoWayStrategy.add(ReferenceStrategy, strategy => new TwoWayReferenceStrategy(strategy.type));
+        
         const twoWayProperty = new TwoWayPropertyBuilder(twoWayStrategy);
         
         const testString = new Property(PString(), "ASD");
@@ -35,12 +44,17 @@ export class Playground {
         const testStringVectorMapTwoWay = twoWayProperty.buildFor(testStringVectorMap);
         document.body.appendChild(testStringVectorMapTwoWay.root);
         
+        const testReference = new Property(PNullable(PRef(TestClass)), null);
+        const testReferenceTwoWay = twoWayProperty.buildFor(testReference);
+        document.body.appendChild(testReferenceTwoWay.root);        
+        
         setTimeout(()=> {
             testString.set(testString.get() + " NANI!");
             testBoolean.set(!testBoolean.get());
             testStringArray.push("NANI!");
             testVectorArray.set(1, new Vector(4, 5));
             testStringVectorMap.set("MM", new Vector(0, 2));
+            testReference.set(new TestClass());
         }, 3000);
 
     }

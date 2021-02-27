@@ -3,7 +3,7 @@
 type Nullable<T> = T | null; 
 
 export class NullableStrategy<T> extends PropertyStrategy<Nullable<T>, Nullable<T>> {
-    constructor(private wrappedStrategy: PropertyStrategy<T>) {
+    constructor(public wrappedStrategy: PropertyStrategy<T>) {
         super();
     }
 

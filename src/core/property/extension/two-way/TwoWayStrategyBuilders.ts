@@ -11,15 +11,17 @@ import {NullableStrategy} from "../../strategy/NullableStrategy";
 import {TwoWayNullableStrategy} from "./TwoWayNullableStrategy";
 
 export class TwoWayStrategyBuilders {
-    builders = new StrategyExtensions<(strategy: PropertyStrategy)=>TwoWayStrategy<any>>();
-
-    addDefaultBuilders() {
-        this.builders.set(StringStrategy, ()=>new TwoWayStringStrategy());
-        this.builders.set(NumberStrategy, ()=>new TwoWayNumberStrategy());
-        this.builders.set(BooleanStrategy, ()=>new TwoWayBooleanStrategy());
-        this.builders.set(NullableStrategy, (strategy)=>new TwoWayNullableStrategy(this.build(strategy)));
-
-        return this;
+    private builders = new StrategyExtensions<(strategy: PropertyStrategy)=>TwoWayStrategy<any>>();
+    
+    constructor() {
+        this.add(StringStrategy, ()=>new TwoWayStringStrategy());
+        this.add(NumberStrategy, ()=>new TwoWayNumberStrategy());
+        this.add(BooleanStrategy, ()=>new TwoWayBooleanStrategy());
+        this.add(NullableStrategy, strategy => new TwoWayNullableStrategy(this.build(strategy.wrappedStrategy)));
+    }
+    
+    add<T extends PropertyStrategy>(strategyType: {new(...args: any[]):T}, builder: (strategy: T)=>TwoWayStrategy<any>) {
+        this.builders.set(strategyType, builder as (strategy: PropertyStrategy)=>TwoWayStrategy<any>);
     }
     
     build(strategy: PropertyStrategy<any>): TwoWayStrategy<any> {
