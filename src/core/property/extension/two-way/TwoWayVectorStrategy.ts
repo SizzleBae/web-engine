@@ -9,6 +9,7 @@ export class TwoWayVectorStrategy extends TwoWayStrategy<Vector, HTMLSpanElement
     
     constructor() {
         super(document.createElement('span'));
+        this.root.className = "tw-vector";
         
         this.xInput.type = "number";
         this.yInput.type = "number";

@@ -1,9 +1,9 @@
-﻿import {TwoWayProperty} from "./TwoWayProperty";
+﻿import {TwoWayAbstractProperty} from "./TwoWayAbstractProperty";
 import {TwoWayStrategyBuilders} from "./TwoWayStrategyBuilders";
 import {TwoWayStrategy} from "./TwoWayStrategy";
 import {MapProperty} from "../../MapProperty";
 
-export class TwoWayMapProperty extends TwoWayProperty {
+export class TwoWayMapProperty extends TwoWayAbstractProperty {
     private twoWayMap = new Map<any, { key: TwoWayStrategy<any>, value: TwoWayStrategy<any> }>();
     
     private propertyChangeListener = ()=>this.refreshTwoWayMap();
@@ -13,6 +13,8 @@ export class TwoWayMapProperty extends TwoWayProperty {
     constructor(private property: MapProperty<any, any>, private strategyBuilders: TwoWayStrategyBuilders) {
         super(document.createElement('div'));
 
+        this.root.className = "tw-map-property";
+        
         property.onChanged.subscribe(this.propertyChangeListener);
         
         this.root.appendChild(this.mapContainer);

@@ -4,6 +4,8 @@ export class TwoWayStringStrategy extends TwoWayStrategy<string, HTMLInputElemen
     constructor() {
         super(document.createElement('input'));
         
+        this.root.className = "tw-string";
+        
         this.root.addEventListener('change', () => this.onHTMLValue.emit(this.root.value));
     }
     

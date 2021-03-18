@@ -1,7 +1,7 @@
 ﻿import {PropertyExtensions} from "../PropertyExtensions";
-import {TwoWayProperty} from "./TwoWayProperty";
+import {TwoWayAbstractProperty} from "./TwoWayAbstractProperty";
 import {Property} from "../../Property";
-import {TwoWaySingleProperty} from "./TwoWaySingleProperty";
+import {TwoWayProperty} from "./TwoWayProperty";
 import {AbstractProperty} from "../../AbstractProperty";
 import {TwoWayStrategyBuilders} from "./TwoWayStrategyBuilders";
 import {ArrayProperty} from "../../ArrayProperty";
@@ -9,13 +9,13 @@ import {TwoWayArrayProperty} from "./TwoWayArrayProperty";
 import {MapProperty} from "../../MapProperty";
 import {TwoWayMapProperty} from "./TwoWayMapProperty";
 
-type TwoWayPropertyExtension<T extends AbstractProperty> = (property: T) => TwoWayProperty;
+type TwoWayPropertyExtension<T extends AbstractProperty> = (property: T) => TwoWayAbstractProperty;
 
 export class TwoWayPropertyBuilder extends PropertyExtensions<TwoWayPropertyExtension<any>> {
     constructor(public strategies: TwoWayStrategyBuilders) {
         super();
         
-        this.set(Property, (property) => new TwoWaySingleProperty(property, strategies));
+        this.set(Property, (property) => new TwoWayProperty(property, strategies));
         this.set(ArrayProperty, (property) => new TwoWayArrayProperty(property, strategies));
         this.set(MapProperty, (property) => new TwoWayMapProperty(property, strategies));
     }

@@ -37,7 +37,7 @@ export class ReferenceStrategy<T extends object> extends PropertyStrategy<T, PRe
             return memento.object as T;
         }
         
-        throw new Error(`ReferenceStrategy: Failed to deserialize. Memento did not contain an object`);
+        throw `ReferenceStrategy: Failed to deserialize. Memento did not contain an object`;
     }
 
     modify(value: T): T {

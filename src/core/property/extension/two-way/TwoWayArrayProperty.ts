@@ -1,9 +1,9 @@
-﻿import {TwoWayProperty} from "./TwoWayProperty";
+﻿import {TwoWayAbstractProperty} from "./TwoWayAbstractProperty";
 import {TwoWayStrategyBuilders} from "./TwoWayStrategyBuilders";
 import {TwoWayStrategy} from "./TwoWayStrategy";
 import {ArrayProperty} from "../../ArrayProperty";
 
-export class TwoWayArrayProperty extends TwoWayProperty {
+export class TwoWayArrayProperty extends TwoWayAbstractProperty {
     private twoWayArray: TwoWayStrategy<any>[] = [];
     
     private propertyChangeListener = ()=>this.refreshTwoWayArray();
@@ -12,6 +12,8 @@ export class TwoWayArrayProperty extends TwoWayProperty {
     
     constructor(private property: ArrayProperty<any>, private strategyBuilders: TwoWayStrategyBuilders) {
         super(document.createElement('div'));
+        
+        this.root.className = "tw-array-property";
 
         property.onChanged.subscribe(this.propertyChangeListener);
         
